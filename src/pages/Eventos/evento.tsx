@@ -1,126 +1,463 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Evento } from '../../types/interfaces';
-import { api } from '../../services/api';
+import React, { useState, useEffect } from "react";
+import { Evento } from "../../types/interfaces";
+import { api } from "../../services/api";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import { format, isBefore, isAfter } from "date-fns";
+import DOMPurify from "dompurify";
+import { Link } from "react-router-dom";
+import { ptBR } from "date-fns/locale";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-const EventosPage: React.FC = () => {
-    const [eventos, setEventos] = useState<Evento[]>([]);
+const PaginaDeEventos: React.FC = () => {
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [filteredEventos, setFilteredEventos] = useState<Evento[]>([]);
+  const [eventosRecentes, setEventosRecentes] = useState<Conteudo[]>([]);
+  const [visibleEventosCount, setVisibleEventosCount] = useState(2); // Estado para controlar a quantidade de eventos visíveis
 
-    interface Evento {
-        id: string;
-        title: string;
-        description: string;
-        date: string;
-        banner: string;
+  interface Evento {
+    id: string;
+    titulo: string;
+    descricao: string;
+    data: string;
+    banner: string;
+    local: string;
+    horario: string;
+  }
+
+  interface Conteudo {
+    id: string;
+    titulo: string;
+    descricao: string;
+    autor: string;
+    banner: string;
+    publicadoEm: string;
+    categoriaId: string;
+    categoria: {
+      nome: string;
+    };
+  }
+
+  useEffect(() => {
+    const fetchEventos = async () => {
+      try {
+        const response = await api.get<Evento[]>("/eventos");
+        setEventos(response.data);
+        const currentDate = new Date();
+        const futuros = response.data.filter((evento) =>
+          isAfter(new Date(evento.data), currentDate)
+        );
+        const passados = response.data.filter((evento) =>
+          isBefore(new Date(evento.data), currentDate)
+        );
+        setFilteredEventos(futuros);
+        setEventosRecentes(
+          passados.map((evento) => ({
+            id: evento.id,
+            titulo: evento.titulo,
+            descricao: evento.descricao,
+            autor: "",
+            banner: evento.banner,
+            publicadoEm: evento.data,
+            categoriaId: "",
+            categoria: {
+              nome: "evento",
+            },
+          }))
+        );
+      } catch (error) {
+        console.error("Houve erro ao buscar eventos", error);
+      }
+    };
+
+    fetchEventos();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate) {
+      const formattedDate = format(selectedDate, "yyyy-MM-dd");
+      setFilteredEventos(
+        eventos.filter((evento) => evento.data.startsWith(formattedDate))
+      );
+    } else {
+      const currentDate = new Date();
+      const futuros = eventos.filter((evento) =>
+        isAfter(new Date(evento.data), currentDate)
+      );
+      setFilteredEventos(futuros);
     }
+  }, [selectedDate, eventos]);
 
-    useEffect(() => {
-        const fetchEventos = async () => {
-            try {
-                const response = await api.get<[Evento]>('/evento');
-                setEventos(response.data);
-            } catch (error) {
-                console.error('Houve erro ao buscar eventos', error);
-            }
-        };
+  const handleShowMore = () => {
+    setVisibleEventosCount((prevCount) => prevCount + 2);
+  };
 
-        fetchEventos();
-    }, []);
+  const [visibleCount, setVisibleCount] = useState(6); // Número de eventos a serem mostrados inicialmente
 
-    return (
-        <div className="bg-white mx-auto">
-            {/* Seção de Introdução */}
-            <span className="relative w-full mt-5 flex justify-center">
-                <div className="absolute w-full inset-x-0 top-1/2 h-1 -translate-y-1/2 bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-75"></div>
-                <span className="relative lg:text-lg my-1 bg-stone-600 text-white font-bold px-6 py-2 rounded-full shadow-lg">
-                    Acampamentos
-                </span>
-            </span>
+  // Função para carregar mais 3 eventos
+  const handleLoadMore = () => {
+    setVisibleCount((prevCount) => prevCount + 3);
+  };
 
-            {/* Video de Introdução */}
-            <div className="container mx-auto px-4 py-8">
-                <iframe
-                    src="https://www.youtube.com/embed/your-video-id"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-64 md:h-96 rounded-lg shadow-md"
-                    title="Video de Introdução ao Acampamento"
-                ></iframe>
-            </div>
+  const [isAcampamentoVisible, setAcampamentoVisibility] = useState(true);
+  const [isAcampaKidsVisible, setAcampaKidsVisibility] = useState(true);
+  const [isCongressosKidsVisible, setCongressosKidsVisibility] = useState(true);
 
-            {/* Seção de Informações sobre o Acampamento */}
-            <div className="container mx-auto px-4 py-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">Sobre o Acampamento</h2>
-                <p className="text-gray-700 mb-8">
-                    O acampamento oferece uma experiência única de imersão espiritual, com atividades que promovem a união, o crescimento pessoal e a conexão com a natureza. Participe de momentos de oração, palestras, e atividades recreativas que fortalecem a fé e a amizade.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <img src={`${baseUrl}/images/acampamento1.jpg`} alt="Acampamento 1" className="rounded-lg shadow-md" />
-                    <img src={`${baseUrl}/images/acampamento2.jpg`} alt="Acampamento 2" className="rounded-lg shadow-md" />
-                    <img src={`${baseUrl}/images/acampamento3.jpg`} alt="Acampamento 3" className="rounded-lg shadow-md" />
+  const toggleAcampamentoVisibility = () =>
+    setAcampamentoVisibility(!isAcampamentoVisible);
+  const toggleAcampaKidsVisibility = () =>
+    setAcampaKidsVisibility(!isAcampaKidsVisible);
+  const toggleCongressosKidsVisibility = () =>
+    setCongressosKidsVisibility(!isCongressosKidsVisible);
+
+  return (
+    <div className="">
+      <div className="container mx-auto px-4 py-8">
+        {/* Seção de Filtragem e Calendário */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="col-span-2">
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-6 lg:block flex justify-center">
+              Próximos Eventos
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
+              {filteredEventos.length === 0 ? (
+                <div className="text-center text-gray-600">
+                  Nenhum evento encontrado para a data selecionada.
                 </div>
-            </div>
-
-            {/* Seção de Próximos Eventos */}
-            <div className="container mx-auto px-4 py-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">Próximos Acampamentos</h2>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {eventos.length === 0 ? (
-                        <div className="text-center text-gray-600">Carregando eventos...</div>
-                    ) : (
-                        eventos.map((evento) => (
-                            <CardEvento key={evento.id} evento={evento} />
-                        ))
-                    )}
-                </div>
-            </div>
-
-            {/* Botão Inscreva-se */}
-            <div className="flex justify-center mt-8 mb-20">
-                <Link to="/inscricao">
-                    <button className="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline">
-                        Inscreva-se
+              ) : (
+                <>
+                  {filteredEventos
+                    .slice(0, visibleEventosCount)
+                    .map((evento) => (
+                      <CardEvento key={evento.id} evento={evento} />
+                    ))}
+                  {filteredEventos.length > visibleEventosCount && (
+                    <button
+                      onClick={handleShowMore}
+                      className="bg-zinc-700 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      Ver Mais Eventos
                     </button>
-                </Link>
+                  )}
+                </>
+              )}
             </div>
-
-            {/* Seção de FAQ */}
-            <div className="container mx-auto px-4 py-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">Perguntas Frequentes</h2>
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Quem pode participar do acampamento?</h3>
-                    <p className="text-gray-700">O acampamento é aberto a todas as idades e todos são bem-vindos para participar.</p>
-                </div>
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold">O que devo levar para o acampamento?</h3>
-                    <p className="text-gray-700">Recomendamos que você leve roupas confortáveis, itens de higiene pessoal, uma bíblia e muita disposição para participar das atividades.</p>
-                </div>
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Como faço para me inscrever?</h3>
-                    <p className="text-gray-700">Você pode se inscrever clicando no botão "Inscreva-se" acima e preenchendo o formulário de inscrição.</p>
-                </div>
-            </div>
-
-            {/* Aviso de Construção */}
-            <div className="fixed bottom-0 left-0 right-0 bg-red-600 text-white text-center py-2">
-                Esta página está em construção.
-            </div>
+          </div>
+          <div className="flex flex-col items-center lg:mt-20">
+            <Calendar
+              onChange={(date: Date) => setSelectedDate(date)}
+              value={selectedDate}
+              className="shadow-lg rounded-lg mb-4"
+            />
+            <button
+              onClick={() => setSelectedDate(null)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Limpar Filtros
+            </button>
+          </div>
         </div>
-    );
+
+        {/* Separador Visual */}
+        <div className="border-t-2 border-gray-300 my-8"></div>
+
+        <div data-aos="fade-up" data-aos-duration="1000">
+          <div className="text-center">
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-12">
+              Eventos Recentes
+              <span className="block h-1 bg-green-500 w-24 mx-auto mt-4"></span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+              {/* Mostrar apenas o número limitado de eventos */}
+              {eventosRecentes.slice(0, visibleCount).map((evento) => (
+                <div
+                  key={evento.id}
+                  className=" p-4 rounded-lg  transition-transform transform hover:scale-105"
+                >
+                  <a
+                    href={`/eventos/${evento.id}`} // Atualize a URL conforme necessário
+                    className="block text-xl font-semibold text-gray-800 mb-2 truncate hover:underline"
+                  >
+                    <img
+                      src={`${baseUrl}/${evento.banner}`}
+                      alt={evento.titulo}
+                      className="w-full h-60 object-cover rounded-t-lg mb-4"
+                    />
+
+                    {evento.titulo}
+
+                    <p
+                      className="text-gray-600 line-clamp-3"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(evento.descricao),
+                      }}
+                    />
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            {/* Mostrar o botão "Ver mais eventos" apenas se houver mais eventos a serem exibidos */}
+            {visibleCount < eventosRecentes.length && (
+              <button
+                onClick={handleLoadMore}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors mt-8"
+              >
+                Ver mais eventos
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="border-t-2 border-gray-300 my-8"></div>
+
+        <div className="container mx-auto px-4 py-8">
+          <div className="py-8 -100">
+            <div className="container mx-auto px-4">
+              <div className="mb-16">
+                <h2
+                  className="text-3xl font-extrabold text-gray-900 mb-8 text-center cursor-pointer flex items-center justify-center"
+                  onClick={toggleAcampamentoVisibility}
+                >
+                  Acampamentos
+                  <svg
+                    className={`ml-2 transform transition-transform ${
+                      isAcampamentoVisible ? "rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </h2>
+
+                {isAcampamentoVisible && (
+                  <div className="space-y-12">
+                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                      <div className="md:w-1/2">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                          Nosso Acampamento
+                        </h3>
+                        <p className="text-gray-700 mb-4">
+                          Nossos acampamentos são momentos especiais de encontro
+                          e vivência da fé. Oferecemos atividades para todas as
+                          idades, com foco na espiritualidade e na convivência
+                          comunitária.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <iframe
+                            src="https://www.youtube.com/embed/CrIm88niszM"
+                            title="Vídeo do Acampamento 1"
+                            className="w-full h-48 rounded-lg  object-cover shadow-lg"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                          <iframe
+                            src="https://www.youtube.com/embed/ZeOVn5QaaG8"
+                            title="Vídeo do Acampamento 2"
+                            className="w-full h-48 rounded-lg shadow-lg"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="mb-16">
+                <h2
+                  className="text-3xl font-extrabold text-gray-900 mb-8 text-center cursor-pointer flex items-center justify-center"
+                  onClick={toggleAcampamentoVisibility}
+                >
+                  Eventos com as Crianças
+                  <svg
+                    className={`ml-2 transform transition-transform ${
+                      isAcampamentoVisible ? "rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </h2>
+
+                {isAcampaKidsVisible && (
+                  <div className="space-y-12">
+                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                      <div className="md:w-1/2">
+                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                          Setro Criança
+                        </h3>
+                        <p className="text-gray-700 mb-4">
+                          O Setor Criança é um espaço especial para as crianças,
+                          com atividades divertidas e educativas. É uma
+                          oportunidade para elas crescerem na fé enquanto se
+                          divertem com jogos e dinâmicas preparadas
+                          especialmente para a sua faixa etária.
+                          
+                          Os membros da comunidade se dedicam aos pequenos para levarem até eles o amor de Cristo!
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <img
+                            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/dd.jpg?raw=true"
+                            title="Vídeo do Acampa Kids 1"
+                            className="w-full object-cover h-48 shadow-lg"
+                          ></img>
+                          <img
+                            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/stk.jpg?raw=true"
+                            title="Vídeo do Acampa Kids 2"
+                            className="w-full object-cover h-48 rounded-lg shadow-lg"
+                          ></img>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {isAcampaKidsVisible && (
+                  <div className="space-y-12">
+                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                      <div className="md:w-1/2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                          <img
+                            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/maiane.jpg?raw=true"
+                            title="Vídeo do Acampa Kids 1"
+                            className="w-full h-48 object-cover rounded-lg shadow-lg"
+                          ></img>
+                         
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="container mx-auto px-4 py-8">
+              <h2 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">
+                Duvidas sobre os Acampamentos?
+              </h2>
+              <FAQ />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-const CardEvento: React.FC<{ evento: Evento }> = ({ evento }) => (
-    <div className="rounded-lg bg-white shadow-md overflow-hidden transform transition duration-300 hover:scale-105">
-        <img src={`${baseUrl}/files/${evento.banner}`} alt={evento.title} className="w-full h-40 object-cover object-center" />
-        <div className="p-4">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">{evento.title}</h3>
-            <p className="text-gray-700">{evento.description}</p>
-            <p className="text-gray-600 mt-2">Data: {new Date(evento.date).toLocaleDateString('pt-BR')}</p>
-        </div>
-    </div>
-);
+const CardEvento: React.FC<{ evento: Evento }> = ({ evento }) => {
+  const truncatedContent =
+    DOMPurify.sanitize(evento.descricao).slice(0, 100) + "..."; // Limita o conteúdo para exibir apenas um resumo
 
-export default EventosPage;
+  return (
+    <div className="md:flex mb-4 bg-white rounded-lg overflow-hidden  transition-transform transform hover:scale-105">
+      <div className="flex-shrink-0">
+        <Link to={`/eventos/${evento.id}`}>
+          <img
+            src={`${baseUrl}/${evento.banner}`}
+            alt={evento.titulo}
+            className="w-full h-48 object-cover"
+            style={{
+              minHeight: "180px",
+              maxHeight: "200px",
+              maxWidth: "100%",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        </Link>
+      </div>
+
+      <div className="md:w-2/3 p-4 flex flex-col justify-between">
+        <div>
+          <div className="flex items-center mb-2">
+            <span className="text-3xl font-bold text-red-500 mr-2">
+              {format(new Date(evento.data), "dd")}
+            </span>
+            <span className="text-xl text-gray-600">
+              {format(new Date(evento.data), "MMM", { locale: ptBR })}
+            </span>
+          </div>
+
+          <Link to={`/eventos/${evento.id}`}>
+            <h3 className="text-2xl font-semibold text-gray-800 font-display mb-2 transition-colors hover:text-orange-500">
+              {`${evento.titulo.charAt(0).toUpperCase()}${evento.titulo.slice(
+                1
+              )}`}
+            </h3>
+          </Link>
+
+          {/* Display the event description, ensuring it's truncated appropriately */}
+          <div className="line-clamp-3 text-gray-700 font-medium text-sm mb-4">
+            {truncatedContent}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Link
+            to={`/inscricao`}
+            className="w-full text-center bg-red-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-red-600 transition-colors"
+          >
+            Garantir sua Vaga
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FAQ: React.FC = () => {
+  const faqs = [
+    {
+      question:
+        "Quais são as idades permitidas para participar dos acampamentos?",
+      answer:
+        "Os acampamentos são destinados a todas as idades, com atividades específicas para cada faixa etária.",
+    },
+    {
+      question: "O que devo levar para o acampamento?",
+      answer:
+        "Recomendamos trazer itens pessoais de higiene, roupas confortáveis, Bíblia, caderno e caneta para anotações.",
+    },
+    {
+      question: "Há custo para participar do acampamento?",
+      answer:
+        "Sim, há uma taxa de inscrição que cobre alimentação, hospedagem e materiais de apoio. Consulte os detalhes no momento da inscrição.",
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {faqs.map((faq, index) => (
+        <div key={index} className="p-4 rounded-lg border bg-white shadow-md">
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            {faq.question}
+          </h3>
+          <p className="text-gray-700">{faq.answer}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default PaginaDeEventos;

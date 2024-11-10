@@ -1,325 +1,288 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faYoutube } from '@fortawesome/free-brands-svg-icons';
-import { faHeadphones, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { api } from "../../services/api";
+import BemVindoSecao from "./Componentes/SlideHome";
+import Sidebar from "./Componentes/sidebar";
+import MusicasSecao from "./Componentes/musicas";
+import DestaquesSecao from "./Componentes/Destaques";
 
-import Card from '../../componentes/cards/cards';
-import LateralCards from './lateralCards';
-import BemVindoSecao from './SlideHome';
-import ConteudoGridAgape from './ConteudoGridAgape';
-import { FaFacebookSquare, FaInstagram, FaYoutube } from 'react-icons/fa';
-import CountdownTimer from './timer';
-import { CalendarIcon } from '@heroicons/react/20/solid';
-import { api } from '../../services/api';
+interface Conteudo {
+  id: string;
+  titulo: string;
+  descricao: string;
+  autor: string;
+  banner: string;
+  publicadoEm: string;
+  categoria: {
+    id: string;
+    nome: string;
+  };
+}
 
-const eventDate = '2024-07-12T00:00:00';
+// Definindo cores para as novas categorias
+const categoryColors: { [key: string]: string } = {
+  "noticias gerais": "text-yellow-400",
+  papa: "text-red-500",
+  eventos: "text-blue-400",
+  espiritualidade: "text-green-500",
+  "santos e santas": "text-purple-500",
+  opiniao: "text-orange-400",
+  "familia e vida": "text-pink-400",
+  "missoes e caridade": "text-teal-400",
+  "liturgia e sacramentos": "text-indigo-500",
+  juventude: "text-cyan-500",
+  "cultura e arte sacra": "text-brown-400",
+};
 
 const Home = () => {
-    interface Conteudo {
-        id: string;
-        titulo: string;
-        corpo: string;
-        autor: string;
-        banner: string;
-        publicadoEm: string;
-        categoriaId: string;
+  const [conteudos, setConteudos] = useState<Conteudo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showMore, setShowMore] = useState(false);
+  const [newsLimit, setNewsLimit] = useState(12);
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  const fetchConteudo = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get("/conteudos");
+      const conteudos = response.data.map((conteudo: any) => ({
+        id: conteudo.id,
+        titulo: conteudo.titulo,
+        descricao: conteudo.descricao,
+        autor: conteudo.autor,
+        banner: conteudo.banner,
+        publicadoEm: conteudo.publicadoEm,
+        categoriaId: conteudo.categoria.id,
         categoria: {
-            name: string;
-        };
+          nome: conteudo.categoria.nome,
+        },
+      }));
+
+      const uniqueConteudos = Array.from(
+        new Set(conteudos.map((conteudo: any) => conteudo.id))
+      ).map((id) => conteudos.find((conteudo: any) => conteudo.id === id)!);
+
+      setConteudos(uniqueConteudos);
+    } catch (error) {
+      setError(
+        "Houve um erro ao buscar os conteúdos. Tente novamente mais tarde."
+      );
+      console.error("Erro ao buscar os conteúdos:", error);
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    const [conteudos, setConteudos] = useState<Conteudo[]>([]);
+  useEffect(() => {
+    fetchConteudo();
+  }, [fetchConteudo]);
 
-    useEffect(() => {
-        const fetchConteudo = async () => {
-            try {
-                const response = await api.get('/conteudo');
-                const conteudos = response.data.map((conteudo: any) => ({
-                    id: conteudo.id,
-                    titulo: conteudo.titulo,
-                    corpo: conteudo.corpo,
-                    autor: conteudo.autor,
-                    banner: conteudo.banner,
-                    publicadoEm: conteudo.publicadoEm,
-                    categoriaId: conteudo.categoriaId,
-                    categoria: {
-                        name: conteudo.categoria.name,
-                    },
-                }));
-                setConteudos(conteudos);
-            } catch (error) {
-                console.error("Houve um erro ao buscar os conteúdos", error);
-            }
-        };
+  // Função para exibir mais conteúdos
+  const handleShowMore = () => {
+    setShowMore(true);
+    setNewsLimit((prevLimit) => prevLimit + 4);
+  };
 
-        fetchConteudo();
-    }, []);
+  // Filtrar conteúdos
+  const filteredConteudos = conteudos.filter(
+    (conteudo) => conteudo.categoria.nome
+  );
+  const destaqueConteudos = filteredConteudos.slice(0, 5);
+  const remainingConteudos = filteredConteudos.slice(5);
 
-    const [showMore, setShowMore] = useState(false);
-    const [newsLimit, setNewsLimit] = useState(12);
+  if (loading) {
+    return <p>Carregando...</p>;
+  }
 
-    const handleShowMore = () => {
-        setShowMore(true);
-        setNewsLimit(prevLimit => prevLimit + 6);
-    };
+  if (error) {
+    return <p className="text-red-600">{error}</p>;
+  }
 
-    const filteredConteudos = conteudos.filter(
-        (conteudo) => conteudo.categoria.name
-    );
+  return (
+    <div className="mx-auto">
+      <BemVindoSecao />
 
-    const baseUrl = import.meta.env.VITE_BASE_URL;
-    return (
-        <div className="bg-white mx-auto">
-            {/* Seção de Boas-vindas */}
-            <BemVindoSecao />
+      <div className="container mx-auto lg:px-4 lg:mt-12 max-w-7xl">
+        {/* Seção de Destaque */}
+        <div className="bg-white py-6">
+          <div className="xl:container mx-auto px-3 sm:px-4 xl:px-2">
+            <div className="flex flex-wrap -mx-2">
+              {/* Card de destaque à esquerda */}
+              <div className="w-full lg:w-1/2 px-2 mb-4 lg:mb-0">
+                {destaqueConteudos.length > 0 && (
+                  <div className="relative hover-img h-full w-full overflow-hidden">
+                    <Link to={`/conteudos/${destaqueConteudos[0].id}`}>
+                      <img
+                        className="w-full h-96 object-cover"
+                        src={`${baseUrl}/${destaqueConteudos[0].banner}`}
+                        alt={destaqueConteudos[0].titulo}
+                      />
+                    </Link>
+                    <div className="absolute inset-0 px-5 pt-8 pb-5 bg-gradient-to-t from-black to-transparent flex flex-col justify-end">
+                      <Link to={`/conteudos/${destaqueConteudos[0].id}`}>
+                        <h2 className="text-3xl font-bold line-clamp-2 capitalize text-white mb-3 hover:text-red-500">
+                          {destaqueConteudos[0].titulo}
+                        </h2>
+                      </Link>
 
-            {/* Conteúdo Principal e Lateral */}
-            <div className="container mx-auto lg:px-4 lg:mt-8" style={{ maxWidth: '1200px' }}>
-                <ConteudoGridAgape />
-
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Conteúdo Principal */}
-                    <div className="flex-1">
-                        {/* Seção de Notícias */}
-                        <section className="mt-6 lg:mt-24">
-                            {filteredConteudos
-                                .filter(conteudo => conteudo.categoria.name === "oracao")
-                                .slice(0, 1)
-                                .map((conteudo) => (
-
-                                    <div key={conteudo.id} className="block">
-                                        <img
-                                            alt=""
-                                            src={`${baseUrl}/files/${conteudo.banner}`}
-                                            className="h-64 w-full object-cover sm:h-80 lg:h-96"
-                                        />
-                                        <Link to={`/conteudo/${conteudo.id}`}>
-                                            <h3 className="mt-4 text-lg font-bold text-gray-900 hover:text-red-700 sm:text-xl">{conteudo.titulo}</h3>
-                                            <div
-                                                className="line-clamp-2 overflow-hidden text-ellipsis"
-                                                dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
-                                            />
-                                        </Link>
-                                    </div>
-
-                                ))}
-
-
-                            <div className="py-8">
-                                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Artigos e Notícias</h2>
-
-
-                                <div className="gap-4">
-                                    {filteredConteudos.slice(0, showMore ? filteredConteudos.length : newsLimit)
-                                        .filter(conteudo => conteudo.categoria.name != "acampamento"
-                                            && conteudo.categoria.name != "eventos"
-                                            && conteudo.categoria.name != "agape")
-                                        .map((conteudo) => (
-                                            <Card key={conteudo.id} conteudo={conteudo} />
-                                        ))}
-
-                                    {filteredConteudos
-                                        .filter(conteudo => conteudo.categoria.name === "espiritualidade")
-                                        .slice(0, 1)
-                                        .map((conteudo) => (
-                                            <Link to={`/conteudo/${conteudo.id}`} className="group relative block bg-black" key={conteudo.id}>
-                                                <img
-                                                    alt=""
-                                                    src={`${baseUrl}/files/${conteudo.banner}`}
-                                                    className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
-                                                />
-                                                <div className="relative p-4 sm:p-6 lg:p-8">
-                                                    <p className="text-sm font-medium uppercase tracking-widest text-red-600">{conteudo.categoria.name}</p>
-                                                    <p className="text-xl font-bold text-white sm:text-2xl">{conteudo.autor}</p>
-                                                    <div className="mt-32 sm:mt-48 lg:mt-64">
-                                                        <div className="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                                                            <div
-                                                                className="text-white line-clamp-2 overflow-hidden text-ellipsis"
-                                                                dangerouslySetInnerHTML={{ __html: conteudo.corpo }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                </div>
-
-                                {!showMore && conteudos.length > newsLimit && (
-                                    <div className="flex justify-center mt-4">
-                                        <button
-                                            onClick={handleShowMore}
-                                            className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2"
-                                        >
-                                            Mostrar Mais
-                                        </button>
-                                    </div>
-                                )}
-
-                                {showMore && (
-                                    <div className="flex justify-center mt-8">
-                                        <Link to="/noticias" className="text-blue-500 hover:underline">Mais Notícias e Artigos</Link>
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-
-                        {/* explore */}
-
-                        <div className="container mx-auto  lg:py-8">
-
-                            <div className="mb-8">
-                                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Explore</h2>
-                                <iframe
-                                    width="100%"
-                                    height="400"
-                                    src="https://www.youtube.com/embed/ZeOVn5QaaG8"
-                                    title="Vídeo de Apresentação"
-                                    frameBorder="0"
-                                    allowFullScreen
-                                    className="rounded-lg shadow-md"
-                                ></iframe>
-
-                            </div>
-                            <div className='mx-auto '>
-                                {filteredConteudos
-                                    .filter(conteudo => conteudo.categoria.name.toLowerCase() === 'acampamento')
-                                    .slice(0, 1)
-                                    .map((conteudo) => (
-                                        <Card key={conteudo.id} conteudo={conteudo} />
-                                    ))}
-                            </div>
-                            <div className='mx-auto'>
-                                {filteredConteudos
-                                    .filter(conteudo => conteudo.categoria.name.toLowerCase() === 'eventos')
-                                    .slice(0, 1)
-                                    .map((conteudo) => (
-                                        <Card key={conteudo.id} conteudo={conteudo} />
-                                    ))}
-                            </div>
-
-
+                      <div className="pt-2">
+                        <div className="text-gray-100 capitalize">
+                          <div className="inline-block h-3 border-l-2 border-red-600 mr-2 "></div>
+                          {destaqueConteudos[0].categoria.nome}
                         </div>
+                      </div>
                     </div>
+                  </div>
+                )}
+              </div>
 
-                    {/* Lateral */}
-                    <aside className="lg:w-1/3 lg:mt-36">
-                        <LateralCards />
-
-                        <div className="mt-8">
-                            {/* Eventos especiais ou campanhas */}
-                            <div className="bg-white rounded-lg shadow-lg p-6 mb-4 ">
-                                <div className="flex items-center mb-2">
-                                    <CalendarIcon className="h-6 w-6 text-stone-600 mr-2" />
-                                    <h3 className="text-xl font-semibold text-gray-900">Próximos Eventos</h3>
-                                </div>
-                                <p className="text-stone-600 text-lg mb-3">Acampamento</p>
-                                <div className="bg-stone-50  rounded-lg p-4 mb-4">
-                                    <CountdownTimer eventDate={eventDate} />
-                                </div>
-                                <a href="/eventos" className="text-stone-600 hover:underline font-semibold">
-                                    Ver Eventos
-                                </a>
-
-                            </div>
-
-
-                            {/* Redes Sociais */}
-                            <div className="bg-white rounded-lg shadow-lg p-6 mb-8 items-center">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center uppercase">Siga-nos</h3>
-                                <div className="flex space-x-6 items-center justify-center">
-                                    <a
-                                        href="https://www.facebook.com/comunidadecatolicaagape"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-600 hover:text-blue-800 transition duration-300"
-                                    >
-                                        <FaFacebookSquare className="w-6 h-6" />
-                                    </a>
-                                    <a
-                                        href="https://www.instagram.com/comunidadecatolicaagape"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-pink-600 hover:text-pink-800 transition duration-300"
-                                    >
-                                        <FaInstagram className="w-6 h-6" />
-                                    </a>
-                                    <a
-                                        href="https://www.youtube.com/comunidadecatolicaagape"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-red-600 hover:text-red-800 transition duration-300"
-                                    >
-                                        <FaYoutube className="w-6 h-6" />
-                                    </a>
-                                </div>
-                            </div>
-                            {/* Seção de Chamada */}
-                            <section className="mt-12 py-12 ">
-                                <div className="container mx-auto px-4" style={{ maxWidth: '1200px' }}>
-                                    <div className="flex items-center mb-6">
-
-                                        <h2 className="text-2xl md:text-3xl lg:text-2xl font-bold text-gray-800 mb-4">
-                                            Conecte-se e Contribua
-                                        </h2>
-                                        <div className="flex-grow border-t-2 border-amber-500 ml-4" />
-                                    </div>
-
-                                    <div className="grid grid-cols-1  gap-6">
-                                        <div className="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-lg">
-                                            <FontAwesomeIcon icon={faYoutube} className="text-red-600 text-5xl mb-4" />
-                                            <h3 className="text-xl font-semibold mb-2 text-gray-900">Assista no YouTube</h3>
-                                            <p className="text-gray-700 mb-4">Acompanhe nossos vídeos em nosso canal do YouTube.</p>
-                                            <a
-                                                href="https://www.youtube.com/@comunidadecatolicaagape7242"
-                                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-all duration-200"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                Acesse o Canal
-                                            </a>
-                                        </div>
-
-                                        <div className="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-lg">
-                                            <FontAwesomeIcon icon={faHeart} className="text-green-600 text-5xl mb-4" />
-                                            <h3 className="text-xl font-semibold mb-2 text-gray-900">Contribua com Doações</h3>
-                                            <p className="text-gray-700 mb-4">Ajude-nos a continuar nossa missão com sua doação</p>
-                                            <Link
-                                                to="/Doacao"
-                                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-all duration-200"
-                                            >
-                                                Faça uma Doação
-                                            </Link>
-                                        </div>
-
-                                        <div className="flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-lg">
-                                            <FontAwesomeIcon icon={faHeadphones} className="text-gray-600 text-5xl mb-4" />
-                                            <h3 className="text-xl font-semibold mb-2 text-gray-900">Participe da Nossa Rádio</h3>
-                                            <p className="text-gray-700 mb-4">Ouça nossa programação ao vivo na Rádio Ágape</p>
-                                            <Link
-                                                to="/Radio"
-                                                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-all duration-200"
-                                            >
-                                                Ouça Agora
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </section>
+              {/* Cards menores alinhados à direita */}
+              <div className="w-full lg:w-1/2 px-2">
+                <div className="grid grid-cols-2 gap-4">
+                  {destaqueConteudos.slice(1).map((item) => (
+                    <article
+                      key={item.id}
+                      className="relative hover-img h-48 overflow-hidden"
+                    >
+                      <Link to={`/conteudos/${item.id}`}>
+                        <img
+                          className="w-full h-full object-cover capitalize"
+                          src={`${baseUrl}/${item.banner}`}
+                          alt={item.titulo}
+                        />
+                      </Link>
+                      <div className="absolute inset-0 px-4 pt-7 pb-4 bg-gradient-to-t from-black to-transparent flex flex-col justify-end">
+                        <Link to={`/conteudos/${item.id}`}>
+                          <h2 className="text-lg font-bold capitalize leading-tight text-white mb-1 hover:text-red-500">
+                            {item.titulo}
+                          </h2>
+                        </Link>
+                        <div className="pt-1">
+                          <div className="text-white text-sm capitalize">
+                            {item.categoria.nome}
+                          </div>
                         </div>
-                    </aside>
+                      </div>
+                    </article>
+                  ))}
                 </div>
+              </div>
             </div>
-
-
-
+          </div>
         </div>
-    );
+
+        <div className="flex flex-col lg:flex-row gap-8 ">
+          {/* Conteúdo Principal */}
+          <div className="flex-1">
+            {/* Seção de Oração */}
+            <section className="mt-6 lg:mt-24">
+              {remainingConteudos.slice(0, 1).map((conteudo) => (
+                <div key={conteudo.id} className="block mb-6">
+                  <img
+                    alt={conteudo.titulo}
+                    src={`${baseUrl}/${conteudo.banner}`}
+                    className="h-64 w-full object-cover sm:h-80 lg:h-96"
+                  />
+                  <Link to={`/conteudos/${conteudo.id}`}>
+                    <h3 className="mt-4 text-lg font-bold text-gray-900 hover:text-red-700 sm:text-xl">
+                      {conteudo.titulo}
+                    </h3>
+                    <div
+                      className="line-clamp-3 overflow-hidden text-ellipsis"
+                      dangerouslySetInnerHTML={{ __html: conteudo.descricao }}
+                    />
+                  </Link>
+                </div>
+              ))}
+
+              {/* Seção de Notícias */}
+              <section className="py-8">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                  Artigos e Notícias
+                </h2>
+
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 capitalize">
+                  {remainingConteudos
+                    .slice(0, showMore ? remainingConteudos.length : newsLimit)
+                    .map((conteudo) => (
+                      <div
+                        key={conteudo.id}
+                        className="bg-white overflow-hidden"
+                      >
+                        <Link to={`/conteudos/${conteudo.id}`}>
+                          <img
+                            src={`${baseUrl}/${conteudo.banner}`}
+                            alt={conteudo.titulo}
+                            className="w-full h-48 object-cover"
+                          />
+                          <div className="mt-2">
+                            <div className="flex items-center mb-1">
+                              <span
+                                className={`bg-white ${
+                                  categoryColors[
+                                    conteudo.categoria.nome.toLowerCase()
+                                  ] || "text-gray-500"
+                                } text-xs uppercase font-bold mb-2`}
+                              >
+                                {conteudo.categoria.nome
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                  conteudo.categoria.nome.slice(1)}
+                              </span>
+                            </div>
+                            <h2 className="text-lg font-semibold leading-tight text-gray-800">
+                              {conteudo.titulo}
+                            </h2>
+                            <div
+                              className="line-clamp-2 text-sm text-gray-500 mt-2"
+                              dangerouslySetInnerHTML={{
+                                __html: conteudo.descricao,
+                              }}
+                            />
+                          </div>
+                        </Link>
+                      </div>
+                    ))}
+                </div>
+
+                {remainingConteudos.length > newsLimit && !showMore && (
+                  <button
+                    onClick={handleShowMore}
+                    className="px-4 py-2 mt-4 bg-red-500 text-white rounded-lg hover:bg-red-700 transition duration-300"
+                  >
+                    Ver Mais
+                  </button>
+                )}
+              </section>
+            </section>
+            {/* Seção de Vídeo da Comunidade */}
+            <section className="py-8">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
+                Explore os nossos contéudos
+              </h2>
+              <div className="relative w-full h-80">
+                <iframe
+                  src="https://www.youtube.com/embed/OXQ9TuCu2ig?si=47yudAW8X_HloKRJ"
+                  title="Vídeo da Comunidade"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </section>
+
+            <MusicasSecao />
+
+            <DestaquesSecao />
+          </div>
+
+          {/* Sidebar */}
+          <Sidebar />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Home;
-
-
-
-

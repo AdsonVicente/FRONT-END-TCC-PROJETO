@@ -1,116 +1,65 @@
-import React, { useState } from "react";
-import QRCode from "qrcode.react"; // Importa a biblioteca para gerar QR Code
+import React from "react";
 
-const DonationPage: React.FC = () => {
-  const [showPixInfo, setShowPixInfo] = useState(false);
-  const [showBankTransferInfo, setShowBankTransferInfo] = useState(false);
-  const [showQRCode, setShowQRCode] = useState(false);
-  const [pixKey] = useState("79999504661");
-
-  const handlePixButtonClick = () => {
-    setShowPixInfo(true);
-    setShowBankTransferInfo(false);
-  };
-
-  const handleBankTransferButtonClick = () => {
-    setShowPixInfo(false);
-    setShowBankTransferInfo(true);
-  };
-
-  const toggleQRCode = () => {
-    setShowQRCode(!showQRCode);
-  };
-
-  const copyPixKeyToClipboard = () => {
-    navigator.clipboard.writeText(pixKey);
-    alert("Chave PIX copiada para a área de transferência!");
-  };
+const DonationSection: React.FC = () => {
+  const chavePix = "79999504661"; // Sua chave Pix aqui
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden text-black">
-      <div className="relative z-10 text-center px-6">
-        <h1 className="text-4xl lg:text-7xl font-extrabold uppercase tracking-wide text-amber-500 mb-4">
-          Faça sua Doação
+    <div className="flex flex-col items-center min-h-screen p-5 ">
+      <div className="bg-white p-8 w-full max-w-3xl space-y-6 ">
+        {/* Title */}
+        <h1 className="text-4xl font-bold text-gray-900 text-center">
+          Ajude-nos a Evangelizar
         </h1>
-        <p className="text-lg max-w-2xl mx-auto mb-8">
-          Seu apoio é fundamental para impulsionar nossos projetos e atividades. Agradecemos imensamente pela sua generosidade.
+        <p className="text-lg text-gray-700 mt-2 text-center">
+          Sua contribuição é fundamental para nossa missão. Cada doação nos
+          ajuda a espalhar a palavra e a promover ações que transformam vidas.
         </p>
-        <div className="flex justify-center space-x-4 mb-8">
-  <button
-    onClick={handlePixButtonClick}
-    className={`bg-stone-400 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-500 hover:text-white hover:shadow-xl transition duration-300 ease-in-out focus:outline-none ${
-      showPixInfo ? "bg-yellow-600 text-white" : ""
-    }`}
-  >
-    Doar via PIX
-  </button>
-  <button
-    onClick={handleBankTransferButtonClick}
-    className={`bg-stone-400 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-500 hover:text-white hover:shadow-xl transition duration-300 ease-in-out focus:outline-none ${
-      showBankTransferInfo ? "bg-blue-600 text-white" : ""
-    }`}
-  >
-    Transferência Bancária
-  </button>
-</div>
 
-        <div className="text-xl max-w-2xl mx-auto mb-8">
-          <p className="font-semibold">Como sua doação será usada:</p>
-          <p className="mt-2">
-            Estamos em uma campanha intensa e cada contribuição faz uma enorme diferença! Você pode participar deste novo movimento de Deus que já está acontecendo. Sua ajuda é essencial para a evangelização e você pode ser um agente da providência em nossa Comunidade! Junte-se a nós e faça parte desta jornada de fé e amor.
+        {/* Pix Key Section */}
+        <div className="mt-6 text-center">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+            Chave Pix
+          </h2>
+          <p className="text-xl font-bold text-gray-900">{chavePix}</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Utilize a chave acima para realizar sua doação via Pix. Agradecemos
+            por sua generosidade!
           </p>
         </div>
-        {showPixInfo && (
-          <div className="text-xl max-w-2xl mx-auto mb-8">
-            <p className="font-semibold">Instruções para Doação via PIX:</p>
-            <ol className="list-decimal list-inside">
-              <li>Abra o aplicativo do seu banco.</li>
-              <li>Selecione a opção de pagamento via PIX.</li>
-              <li>
-                Cole a chave PIX abaixo ou use a chave PIX:{" "}
-                <strong>{pixKey}</strong>
-              </li>
-            </ol>
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={toggleQRCode}
-                className="bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 hover:shadow-xl transition duration-300 ease-in-out focus:outline-none"
-              >
-                {showQRCode ? "Esconder QR Code" : "Mostrar QR Code"}
-              </button>
-              <button
-                onClick={copyPixKeyToClipboard}
-                className="bg-yellow-500 text-gray-900 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-yellow-600 hover:shadow-xl transition duration-300 ease-in-out focus:outline-none ml-4"
-              >
-                Copiar Chave PIX
-              </button>
+
+        {/* Visit Us Section */}
+        <section className="py-12">
+          <div className="lg:text-center">
+            <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">
+              Venha nos Visitar
+            </h2>
+            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+              Nossa Localização
+            </p>
+          </div>
+          <div className="mt-10">
+            <div className="relative h-96 rounded-lg overflow-hidden shadow-lg">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15655.954186996642!2d-38.006544153571376!3d-11.188482908142564!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x711b299756ed9d1%3A0xa5eaad84906cd6e1!2sLivraria%20Kair%C3%B3s!5e0!3m2!1spt-BR!2sbr!4v1717409274064!5m2!1spt-BR!2sbr"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                aria-hidden="false"
+              />
             </div>
-            {showQRCode && (
-              <div className="mt-4 flex justify-center">
-                <QRCode
-                  value={`chavepix:${pixKey}`}
-                  size={128}
-                  includeMargin={true}
-                />
-              </div>
-            )}
+            <div className="mt-6 text-center">
+              <p className="text-lg leading-6 font-medium text-gray-900">
+                Largo Glicério Siqueira, 248 - Tobias Barreto, SE, 49300-000
+              </p>
+              <p className="mt-1 text-lg leading-6 text-gray-500">
+                📧 @comunidadecatolicaagape
+              </p>
+            </div>
           </div>
-        )}
-        {showBankTransferInfo && (
-          <div className="text-xl max-w-2xl mx-auto mb-8">
-            <p className="font-semibold">Informações para Transferência Bancária:</p>
-            <ul className="list-disc list-inside">
-              <li>Banco: agape</li>
-              <li>Agência: 1234</li>
-              <li>Conta: 5678-9</li>
-              <li>Titular: aa</li>
-              <li>CPF/CNPJ: 123.456.789-00</li>
-            </ul>
-          </div>
-        )}
+        </section>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default DonationPage;
+export default DonationSection;
