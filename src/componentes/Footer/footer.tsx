@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
           {/* Redes Sociais */}
           <div className="lg:w-1/3 flex justify-center space-x-6 mb-6 lg:mb-0">
             <a
-              href="https://www.facebook.com/agape"
+              href="https://www.facebook.com/comcatolicaagape"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-400 transition-colors duration-300"
@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
               <FaFacebookSquare className="h-8 w-8" />
             </a>
             <a
-              href="https://www.instagram.com/agape"
+              href="https://www.instagram.com/comunidadecatolicaagape/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-400 transition-colors duration-300"
@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
               <FaInstagram className="h-8 w-8" />
             </a>
             <a
-              href="https://www.youtube.com/agape"
+              href="https://www.youtube.com/@comunidadecatolicaagape7242"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-400 transition-colors duration-300"

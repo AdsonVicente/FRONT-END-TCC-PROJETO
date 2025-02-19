@@ -33,12 +33,20 @@ const SearchResults = () => {
   const navigate = useNavigate();
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
-  const categoryColors = {
-    tecnologia: "text-blue-500",
-    saude: "text-green-500",
-    educacao: "text-yellow-500",
-    // Add more colors for other categories
-  };
+  // Definindo cores para as novas categorias
+const categoryColors: { [key: string]: string } = {
+  "noticias gerais": "text-yellow-400",
+  papa: "text-red-500",
+  eventos: "text-blue-400",
+  espiritualidade: "text-green-500",
+  "santos e santas": "text-purple-500",
+  opiniao: "text-orange-400",
+  "familia e vida": "text-pink-400",
+  "missoes e caridade": "text-teal-400",
+  "liturgia e sacramentos": "text-indigo-500",
+  juventude: "text-cyan-500",
+  "cultura e arte sacra": "text-brown-400",
+};
 
   const fetchContents = async () => {
     setLoading(true);

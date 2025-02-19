@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 const EditarEvento: React.FC = () => {
   const { id } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [editContent, setEditContent] = useState({
     id: "",

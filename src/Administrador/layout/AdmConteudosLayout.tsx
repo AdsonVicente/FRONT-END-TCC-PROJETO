@@ -6,7 +6,7 @@ interface ProtectLayoutProps {
 }
 
 const ProtectAdmConteudosLayout: React.FC<ProtectLayoutProps> = ({ children }) => {
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
   const [showModal, setShowModal] = useState(false); // Estado para controlar o modal
   const [isAuthenticated, setIsAuthenticated] = useState(true); // Estado para controle de autenticação
   const [isAuthorized, setIsAuthorized] = useState(true); // Estado para controle de autorização
@@ -65,6 +65,6 @@ const ProtectAdmConteudosLayout: React.FC<ProtectLayoutProps> = ({ children }) =
       )}
     </>
   );
-  };
+};
 
-  export default ProtectAdmConteudosLayout
+export default ProtectAdmConteudosLayout

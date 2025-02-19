@@ -44,15 +44,33 @@ const PaginaDeEventos: React.FC = () => {
     const fetchEventos = async () => {
       try {
         const response = await api.get<Evento[]>("/eventos");
-        setEventos(response.data);
+
+        // Todos os eventos recebidos
+        const eventosRecebidos = response.data;
+
+        // Data atual, sem considerar horas (normalização)
         const currentDate = new Date();
-        const futuros = response.data.filter((evento) =>
-          isAfter(new Date(evento.data), currentDate)
+        const startOfToday = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate()
         );
-        const passados = response.data.filter((evento) =>
-          isBefore(new Date(evento.data), currentDate)
+
+
+        // Filtrar eventos futuros (incluindo o dia atual)
+        const futuros = eventosRecebidos.filter((evento) =>
+          isAfter(new Date(evento.data), startOfToday) ||
+          format(new Date(evento.data), "yyyy-MM-dd") === format(startOfToday, "yyyy-MM-dd")
         );
-        setFilteredEventos(futuros);
+
+        // Filtrar eventos passados
+        const passados = eventosRecebidos.filter((evento) =>
+          isBefore(new Date(evento.data), startOfToday)
+        );
+
+        // Atualizar estados
+        setEventos(eventosRecebidos); // Todos os eventos
+        setFilteredEventos(futuros); // Eventos futuros
         setEventosRecentes(
           passados.map((evento) => ({
             id: evento.id,
@@ -74,6 +92,7 @@ const PaginaDeEventos: React.FC = () => {
 
     fetchEventos();
   }, []);
+
 
   useEffect(() => {
     if (selectedDate) {
@@ -101,16 +120,6 @@ const PaginaDeEventos: React.FC = () => {
     setVisibleCount((prevCount) => prevCount + 3);
   };
 
-  const [isAcampamentoVisible, setAcampamentoVisibility] = useState(true);
-  const [isAcampaKidsVisible, setAcampaKidsVisibility] = useState(true);
-  const [isCongressosKidsVisible, setCongressosKidsVisibility] = useState(true);
-
-  const toggleAcampamentoVisibility = () =>
-    setAcampamentoVisibility(!isAcampamentoVisible);
-  const toggleAcampaKidsVisibility = () =>
-    setAcampaKidsVisibility(!isAcampaKidsVisible);
-  const toggleCongressosKidsVisibility = () =>
-    setCongressosKidsVisibility(!isCongressosKidsVisible);
 
   return (
     <div className="">
@@ -147,7 +156,7 @@ const PaginaDeEventos: React.FC = () => {
           </div>
           <div className="flex flex-col items-center lg:mt-20">
             <Calendar
-              onChange={(date: Date) => setSelectedDate(date)}
+
               value={selectedDate}
               className="shadow-lg rounded-lg mb-4"
             />
@@ -215,143 +224,42 @@ const PaginaDeEventos: React.FC = () => {
 
         <div className="container mx-auto px-4 py-8">
           <div className="py-8 -100">
-            <div className="container mx-auto px-4">
-              <div className="mb-16">
-                <h2
-                  className="text-3xl font-extrabold text-gray-900 mb-8 text-center cursor-pointer flex items-center justify-center"
-                  onClick={toggleAcampamentoVisibility}
-                >
-                  Acampamentos
-                  <svg
-                    className={`ml-2 transform transition-transform ${
-                      isAcampamentoVisible ? "rotate-180" : ""
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </h2>
-
-                {isAcampamentoVisible && (
-                  <div className="space-y-12">
-                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                      <div className="md:w-1/2">
-                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                          Nosso Acampamento
-                        </h3>
-                        <p className="text-gray-700 mb-4">
-                          Nossos acampamentos são momentos especiais de encontro
-                          e vivência da fé. Oferecemos atividades para todas as
-                          idades, com foco na espiritualidade e na convivência
-                          comunitária.
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <iframe
-                            src="https://www.youtube.com/embed/CrIm88niszM"
-                            title="Vídeo do Acampamento 1"
-                            className="w-full h-48 rounded-lg  object-cover shadow-lg"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          ></iframe>
-                          <iframe
-                            src="https://www.youtube.com/embed/ZeOVn5QaaG8"
-                            title="Vídeo do Acampamento 2"
-                            className="w-full h-48 rounded-lg shadow-lg"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          ></iframe>
-                        </div>
-                      </div>
-                    </div>
+            <section className="mb-16">
+              <h2 className="text-4xl font-extrabold text-gray-900 text-center mb-8">
+                Acampamentos
+              </h2>
+              <div className="flex flex-col md:flex-row items-start space-y-8 md:space-y-0 md:space-x-8">
+                <div className="md:w-1/2">
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                    Nosso Acampamento
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Nossos acampamentos são momentos especiais de encontro e vivência
+                    da fé. Oferecemos atividades para todas as idades, com foco na
+                    espiritualidade e na convivência comunitária.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <iframe
+                      src="https://www.youtube.com/embed/CrIm88niszM"
+                      title="Vídeo do Acampamento 1"
+                      className="w-full h-48 rounded-lg shadow-lg"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                    <iframe
+                      src="https://www.youtube.com/embed/ZeOVn5QaaG8"
+                      title="Vídeo do Acampamento 2"
+                      className="w-full h-48 rounded-lg shadow-lg"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
                   </div>
-                )}
+                </div>
               </div>
-              <div className="mb-16">
-                <h2
-                  className="text-3xl font-extrabold text-gray-900 mb-8 text-center cursor-pointer flex items-center justify-center"
-                  onClick={toggleAcampamentoVisibility}
-                >
-                  Eventos com as Crianças
-                  <svg
-                    className={`ml-2 transform transition-transform ${
-                      isAcampamentoVisible ? "rotate-180" : ""
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </h2>
-
-                {isAcampaKidsVisible && (
-                  <div className="space-y-12">
-                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                      <div className="md:w-1/2">
-                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-                          Setro Criança
-                        </h3>
-                        <p className="text-gray-700 mb-4">
-                          O Setor Criança é um espaço especial para as crianças,
-                          com atividades divertidas e educativas. É uma
-                          oportunidade para elas crescerem na fé enquanto se
-                          divertem com jogos e dinâmicas preparadas
-                          especialmente para a sua faixa etária.
-                          
-                          Os membros da comunidade se dedicam aos pequenos para levarem até eles o amor de Cristo!
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <img
-                            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/dd.jpg?raw=true"
-                            title="Vídeo do Acampa Kids 1"
-                            className="w-full object-cover h-48 shadow-lg"
-                          ></img>
-                          <img
-                            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/stk.jpg?raw=true"
-                            title="Vídeo do Acampa Kids 2"
-                            className="w-full object-cover h-48 rounded-lg shadow-lg"
-                          ></img>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {isAcampaKidsVisible && (
-                  <div className="space-y-12">
-                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                      <div className="md:w-1/2">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                          <img
-                            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/maiane.jpg?raw=true"
-                            title="Vídeo do Acampa Kids 1"
-                            className="w-full h-48 object-cover rounded-lg shadow-lg"
-                          ></img>
-                         
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
+            </section>
+            
             <div className="container mx-auto px-4 py-8">
               <h2 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">
                 Duvidas sobre os Acampamentos?

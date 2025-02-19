@@ -2,21 +2,23 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FaUser, FaCalendar, FaFileAlt, FaCog, FaTag } from "react-icons/fa";
 import { api } from "../../services/api";
 import { Link } from "react-router-dom";
-import { Tooltip, ResponsiveContainer, PieChart, Pie } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Tooltip, BarChart, Bar, XAxis, YAxis, Legend } from "recharts";
+
+interface Statistics {
+  administradores: number;
+  eventos: number;
+  conteudos: number;
+}
 
 const Dashboard: React.FC = () => {
-  const [statistics, setStatistics] = useState<{
-    users: number;
-    events: number;
-    contents: number;
-  } | null>(null);
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
 
   const fetchStatistics = useCallback(async () => {
     try {
       const response = await api.get("/statistics");
       setStatistics(response.data);
     } catch (error) {
-      console.error("Erro ao buscar estatísticas", error);
+      console.error("Erro ao buscar estatísticas:", error);
     }
   }, []);
 
@@ -24,126 +26,84 @@ const Dashboard: React.FC = () => {
     fetchStatistics();
   }, [fetchStatistics]);
 
+  // Se os dados ainda não chegaram, exibe um carregando...
+  if (!statistics) {
+    return <p className="text-gray-600">Carregando estatísticas...</p>;
+  }
+
+  const data = [
+    { name: "Administradores", value: statistics.administradores || 1 },
+    { name: "Eventos", value: statistics.eventos || 1 },
+    { name: "Conteúdos", value: statistics.conteudos || 1 },
+  ];
+
+  const menuItems = [
+    { to: "/gerenciarevento", label: "Gerenciar Eventos", icon: <FaCalendar className="w-6 h-6 text-green-500 mr-4" /> },
+    { to: "/gerenciarusuarios", label: "Gerenciar Usuários", icon: <FaUser className="w-6 h-6 text-blue-500 mr-4" /> },
+    { to: "/gerenciarconteudo", label: "Gerenciar Conteúdos", icon: <FaFileAlt className="w-6 h-6 text-red-500 mr-4" /> },
+    { to: "/conteudo/publicar", label: "Publicar Conteúdo", icon: <FaFileAlt className="w-6 h-6 text-purple-500 mr-4" /> },
+    { to: "/gerenciarcategoria", label: "Gerenciar Categorias", icon: <FaTag className="w-6 h-6 text-teal-500 mr-4" /> },
+    { to: "/perfil", label: "Configurações", icon: <FaCog className="w-6 h-6 text-yellow-500 mr-4" /> },
+  ];
+
+
   return (
     <div className="flex flex-col lg:flex-row space-x-0 lg:space-x-4 px-4 sm:px-6 lg:px-8 min-h-screen">
       {/* Sidebar */}
-      <div className="bg-white sm: grid-col p-6 w-full lg:w-1/4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Gerenciamento
-        </h3>
-        <Link to="/gerenciarevento">
-          <button className="flex items-center w-full p-4   hover:bg-gray-200 transition mb-2">
-            <FaCalendar className="w-6 h-6 text-green-500 mr-4" />
-            Gerenciar Eventos
-          </button>
-        </Link>
-        <Link to="/gerenciarusuarios">
-          <button className="flex items-center w-full p-4   hover:bg-gray-200 transition mb-2">
-            <FaUser className="w-6 h-6 text-blue-500 mr-4" />
-            Gerenciar Usuários
-          </button>
-        </Link>
-        <Link to="/gerenciarconteudo">
-          <button className="flex items-center w-full p-4   hover:bg-gray-200 transition mb-2">
-            <FaFileAlt className="w-6 h-6 text-red-500 mr-4" />
-            Gerenciar Conteúdos
-          </button>
-        </Link>
-        <Link to="/conteudo/publicar">
-          <button className="flex items-center w-full p-4   hover:bg-gray-200 transition mb-2">
-            <FaFileAlt className="w-6 h-6 text-purple-500 mr-4" />
-            Publicar Conteúdo
-          </button>
-        </Link>
-        <Link to="/gerenciarcategoria">
-          <button className="flex items-center w-full p-4   hover:bg-gray-200 transition mb-2">
-            <FaTag className="w-6 h-6 text-teal-500 mr-4" />
-            Gerenciar Categorias
-          </button>
-        </Link>
-        <Link to="/perfil">
-          <button className="flex items-center w-full p-4   hover:bg-gray-200 transition mb-2">
-            <FaCog className="w-6 h-6 text-yellow-500 mr-4" />
-            Configurações
-          </button>
-        </Link>
-      </div>
+      <aside className="bg-white p-6 w-full lg:w-1/4 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Gerenciamento</h3>
+        {menuItems.map((item) => (
+          <Link key={item.to} to={item.to}>
+            <button className="flex items-center w-full p-4 hover:bg-gray-200 transition rounded-lg mb-2">
+              {item.icon}
+              {item.label}
+            </button>
+          </Link>
+        ))}
+      </aside>
 
       {/* Main Content */}
-      <div className="flex-1 max-w-full sm:max-w-5xl bg-white p-6 rounded-lg">
+      <main className="flex-1 max-w-full sm:max-w-5xl bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
           Estatísticas do Site
         </h3>
 
-        {statistics ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {Object.entries(statistics).map(([key, value]) => (
-              <div
-                key={key}
-                className="flex items-center p-4 bg-gray-100 rounded-lg shadow-md"
-              >
-                {/* Icons for each statistic */}
-                {key === "users" && (
-                  <FaUser className="w-6 h-6 text-blue-500 mr-4" />
-                )}
-                {key === "events" && (
-                  <FaCalendar className="w-6 h-6 text-green-500 mr-4" />
-                )}
-                {key === "contents" && (
-                  <FaFileAlt className="w-6 h-6 text-red-500 mr-4" />
-                )}
-
-                <div>
-                  <p className="text-sm sm:text-base font-semibold text-gray-700 capitalize">
-                    {key}
-                  </p>
-                  <p className="text-lg sm:text-xl font-bold text-gray-900">
-                    {value}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-600">Carregando estatísticas...</p>
-        )}
-
         {/* Gráficos */}
-        <div className="mt-8">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
-            Gráficos de Desempenho
-          </h3>
-          <div className="flex flex-col md:flex-row md:space-x-4">
-            {/* Gráfico de Conteúdos */}
-            {statistics && (
-              <div className="bg-white p-4 rounded-lg shadow-md w-full">
-                <h4 className="font-semibold mb-2">
-                  Distribuição de Conteúdos
-                </h4>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={[
-                        { name: "Usuários", value: statistics.users },
-                        { name: "Eventos", value: statistics.events },
-                        { name: "Conteúdos", value: statistics.contents },
-                      ]}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name }) => name}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    />
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          {/* Gráfico de Pizza */}
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+            <h4 className="text-lg font-semibold text-gray-700 mb-4">Distribuição das Estatísticas</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}`}
+                />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Gráfico de Barras */}
+          <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+            <h4 className="text-lg font-semibold text-gray-700 mb-4">Comparação de Estatísticas</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={data}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

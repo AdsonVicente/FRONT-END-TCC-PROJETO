@@ -40,6 +40,7 @@ const ListarAdministradoresPage: React.FC = () => {
     fetchAdmins();
   }, [fetchAdmins]);
 
+  // @ts-ignore
   const handleVerConteudos = async (adminId: string, nomeAdmin: string) => {
     try {
       const response = await api.get(

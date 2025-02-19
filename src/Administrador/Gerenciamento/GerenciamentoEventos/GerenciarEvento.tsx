@@ -19,8 +19,18 @@ interface InscricaoEvento {
   };
 }
 
+interface Evento {
+  id: string;
+  titulo: string;
+  descricao: string;
+  data: string;
+  local: string;
+  horario: string;
+  banner?: string;
+}
+
 const GerenciarEventos: React.FC = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<Evento[]>([]);
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [data, setData] = useState("");
@@ -29,17 +39,12 @@ const GerenciarEventos: React.FC = () => {
   const [banner, setBanner] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-  const [inscricoesEventos, setInscricoesEventos] = useState<InscricaoEvento[]>(
-    []
-  );
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [inscricoesEventos, setInscricoesEventos] = useState<InscricaoEvento[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteInscricaoId, setDeleteInscricaoId] = useState<string>("");
-  const [filtroEvento, setFiltroEvento] = useState("");
+  const [deleteInscricaoId] = useState<string>("");
   const [showInscritosModal, setShowInscritosModal] = useState(false);
-  const [inscritosDoEvento, setInscritosDoEvento] = useState<InscricaoEvento[]>(
-    []
-  );
+  const [inscritosDoEvento, setInscritosDoEvento] = useState<InscricaoEvento[]>([]);
   const navigate = useNavigate();
 
   const fetchEvents = async () => {
@@ -104,7 +109,7 @@ const GerenciarEventos: React.FC = () => {
       );
       toast.error(
         "Erro ao criar evento: " +
-          (err.response?.data?.message || "Tente novamente.")
+        (err.response?.data?.message || "Tente novamente.")
       );
     }
   };
@@ -115,7 +120,7 @@ const GerenciarEventos: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = (eventId: number) => {
+  const handleDeleteClick = (eventId: string) => {
     setSelectedEventId(eventId);
     setShowModal(true);
   };
@@ -175,10 +180,7 @@ const GerenciarEventos: React.FC = () => {
     );
   };
 
-  const handleDeleteInscricaoConfirmation = (inscricaoId: string) => {
-    setDeleteInscricaoId(inscricaoId);
-    setIsDeleteModalOpen(true);
-  };
+
 
   const deleteInscricao = async () => {
     try {

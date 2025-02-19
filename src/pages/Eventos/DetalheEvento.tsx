@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
 import { FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
 
@@ -129,18 +129,6 @@ const DetalheEvento: React.FC = () => {
         <p className="text-lg text-gray-600">{evento.horario}</p>
       </div>
 
-      {/* Subscription Section */}
-      <div className="bg-red-100 p-4 rounded-md mb-8">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">
-          Inscreva-se para o Evento
-        </h2>
-        <Link
-          to={`/inscricao`}
-          className="w-full text-center bg-red-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-red-600 transition-colors"
-        >
-          Garantir sua Vaga
-        </Link>
-      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { api } from "../../services/api";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -18,18 +19,19 @@ const ContactPage = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/api/v1/enviaremail", {
+      const response = await api("/enviaremail", {
         // Ajuste a URL conforme necessário
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+
       });
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Erro ao enviar a mensagem.");
       }
+
 
       alert("Obrigado pelo seu contato! Em breve entraremos em contato.");
       setFormData({ name: "", email: "", message: "" });
@@ -68,22 +70,12 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen">
-      <section className="relative bg-gradient-to-r from-amber-300 to-yellow-400 text-black h-96 flex items-center justify-center">
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <h1 className="text-5xl lg:text-7xl font-extrabold uppercase tracking-wider">
-            Entre em Contato
-          </h1>
-          <p className="text-lg mt-4">
-            Estamos aqui para ouvir você e ajudar no que for necessário.
-          </p>
-        </div>
-      </section>
 
       <section className="container mx-auto py-8 px-4 md:px-8">
         <div className="flex flex-wrap justify-between">
           <form
             onSubmit={handleSubmit}
-            className="max-w-md w-full mb-8 bg-white  rounded-lg p-6"
+            className="max-w-md w-full mb-8 bg-white shadow-lg rounded-lg p-6"
           >
             <h2 className="text-2xl font-bold mb-6 text-gray-800">
               Envie-nos uma Mensagem
@@ -146,7 +138,7 @@ const ContactPage = () => {
             </button>
           </form>
 
-          <div className="w-full md:w-1/2 bg-white rounded-lg p-6">
+          <div className="w-full md:w-1/2 bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">
               Perguntas Frequentes
             </h2>

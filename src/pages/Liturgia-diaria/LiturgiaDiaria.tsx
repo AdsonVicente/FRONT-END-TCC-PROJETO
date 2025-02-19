@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { api } from "../../services/api";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import { FaCalendarAlt } from "react-icons/fa";
 
 interface Liturgia {
   id: string;
@@ -16,42 +15,34 @@ interface Liturgia {
 
 const LiturgiaDiaria: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedLiturgia, setSelectedLiturgia] = useState<Liturgia | null>(
-    null
-  );
-  const [visibleLeitura, setVisibleLeitura] =
-    useState<string>("primeiraLeitura");
-  const [fontSize, setFontSize] = useState("text-base");
+  const [selectedLiturgia, setSelectedLiturgia] = useState<Liturgia | null>(null);
+  const [visibleLeitura, setVisibleLeitura] = useState<string>("primeiraLeitura");
+  const [fontSize, setFontSize] = useState("text-lg");
   const [cache, setCache] = useState<Record<string, Liturgia | null>>({});
 
-  const fetchLiturgias = useCallback(
-    async (date: Date) => {
-      const formattedDate = date.toISOString().split("T")[0]; // yyyy-mm-dd
-      if (cache[formattedDate]) {
-        setSelectedLiturgia(cache[formattedDate]);
-        return;
-      }
+  const fetchLiturgias = useCallback(async (date: Date) => {
+    const formattedDate = date.toISOString().split("T")[0];
 
-      try {
-        // Passa a data na URL como parâmetro
-        const response = await api.get<Liturgia[]>(
-          `/liturgias?data=${formattedDate}` // Buscar liturgia pela data
-        );
-        const liturgia = response.data.length > 0 ? response.data[0] : null;
-        setCache((prevCache) => ({ ...prevCache, [formattedDate]: liturgia }));
-        setSelectedLiturgia(liturgia);
-      } catch (error) {
-        console.error("Erro ao buscar liturgias:", error);
-      }
-    },
-    [cache]
-  );
+    if (cache[formattedDate]) {
+      setSelectedLiturgia(cache[formattedDate]);
+      return;
+    }
+
+    try {
+      const response = await api.get<Liturgia[]>(`/liturgias?dia=${formattedDate}`);
+      const liturgia = response.data.length > 0 ? response.data[0] : null;
+      setCache((prevCache) => ({ ...prevCache, [formattedDate]: liturgia }));
+      setSelectedLiturgia(liturgia);
+    } catch (error) {
+      console.error("Erro ao buscar liturgias:", error);
+    }
+  }, [cache]);
 
   useEffect(() => {
     const today = new Date();
-    setSelectedDate(today); // Definir a data atual ao carregar o componente
-    fetchLiturgias(today); // Busca a liturgia do dia ao carregar o componente
-  }, [fetchLiturgias]);
+    setSelectedDate(today);
+    fetchLiturgias(today);
+  }, []);
 
   useEffect(() => {
     if (selectedLiturgia) {
@@ -63,179 +54,118 @@ const LiturgiaDiaria: React.FC = () => {
     setVisibleLeitura(leitura);
   }, []);
 
-  const handleDateChange = (value: Date) => {
-    setSelectedDate(value);
-  };
+  const increaseFontSize = () => setFontSize("text-xl");
+  const decreaseFontSize = () => setFontSize("text-base");
 
-  const increaseFontSize = () => {
-    setFontSize("text-lg");
-  };
-
-  const decreaseFontSize = () => {
-    setFontSize("text-sm");
-  };
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
   return (
-    <div className="container mx-auto p-4 sm:p-6">
-      <div className="text-center mb-4 sm:mb-6">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-gradient mb-4 sm:mb-6 transition-transform transform hover:scale-105">
-          Liturgia Diária
+    <div className="flex flex-col items-center justify-center">
+      <div className="w-full h-24 px-4 sm:px-8 lg:px-24 flex justify-between items-center">
+        <h1 className="hidden lg:block text-3xl sm:text-4xl font-serif text-zinc-900 truncate">
+          Liturgia
         </h1>
+        <div className="flex items-center text-zinc-900 text-sm sm:text-base">
+          <FaCalendarAlt size={25} />
+          <p className="ml-2">{formatDate(selectedDate)}</p>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
-        <div className="block sm:hidden mb-4">
-          <div className="flex justify-center">
-            <Calendar
-              onChange={(value) => handleDateChange(value as Date)} // Cast to Date
-              value={selectedDate}
-              className="react-calendar w-full"
+      <div className="container w-full sm:w-2/3 mb-4 sm:mb-0 px-4">
+        {selectedLiturgia ? (
+          <div className={`bg-white text-left p-6 ${fontSize} font-serif text-zinc-900`}>
+            <h2
+              className="text-xl font-bold mb-4 whitespace-normal break-words text-red-600"
+              dangerouslySetInnerHTML={{ __html: selectedLiturgia.titulo }}
             />
-          </div>
-        </div>
-
-        <div className="w-full sm:w-2/3 sm:pr-4 mb-4 sm:mb-0">
-          {selectedLiturgia ? (
-            <div className={`bg-white text-left p-4 sm:p-6 ${fontSize}`}>
-              <h2
-                className="text-xl font-bold mb-4 text-center whitespace-normal break-words"
-                dangerouslySetInnerHTML={{ __html: selectedLiturgia.titulo }}
-              />
-              <p className="flex justify-center m-2 text-lg font-medium mb-4">
-                Cor Litúrgica:{" "}
-                <span
-                  className="mb-2 px-2"
-                  dangerouslySetInnerHTML={{
-                    __html: selectedLiturgia.corLiturgica,
-                  }}
-                />
-              </p>
-              <div className="flex mb-4 justify-end">
-                <button
-                  onClick={decreaseFontSize}
-                  className="px-3 sm:px-4 py-1 sm:py-2 rounded"
-                >
-                  A-
-                </button>
-                <button
-                  onClick={increaseFontSize}
-                  className="px-3 sm:px-4 py-1 sm:py-2 rounded"
-                >
-                  A+
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end mb-6">
-                <button
-                  className={`w-full sm:w-auto px-4 py-2 rounded-md text-zinc-900 ${
-                    visibleLeitura === "primeiraLeitura"
-                      ? "bg-amber-600"
-                      : "bg-amber-400 hover:bg-amber-500"
-                  }`}
-                  onClick={() => handleLeituraVisibility("primeiraLeitura")}
-                >
-                  1° Leitura
-                </button>
-                {selectedLiturgia.segundaLeitura && (
-                  <button
-                    className={`w-full sm:w-auto px-4 py-2 rounded-md text-zinc-900 ${
-                      visibleLeitura === "segundaLeitura"
-                        ? "bg-amber-600"
-                        : "bg-amber-400 hover:bg-amber-500"
-                    }`}
-                    onClick={() => handleLeituraVisibility("segundaLeitura")}
-                  >
-                    2° Leitura
-                  </button>
-                )}
-                <button
-                  className={`w-full sm:w-auto px-4 py-2 rounded-md text-zinc-900 ${
-                    visibleLeitura === "salmoResponsorial"
-                      ? "bg-amber-600"
-                      : "bg-amber-400 hover:bg-amber-500"
-                  }`}
-                  onClick={() => handleLeituraVisibility("salmoResponsorial")}
-                >
-                  Salmo Responsorial
-                </button>
-                <button
-                  className={`w-full sm:w-auto px-4 py-2 rounded-md text-zinc-900 ${
-                    visibleLeitura === "evangelho"
-                      ? "bg-amber-600"
-                      : "bg-amber-400 hover:bg-amber-500"
-                  }`}
-                  onClick={() => handleLeituraVisibility("evangelho")}
-                >
-                  Evangelho
-                </button>
-              </div>
-
-              <div className="mb-4">
-                {visibleLeitura === "primeiraLeitura" && (
-                  <div>
-                    <h3 className="text-lg font-semibold">Primeira Leitura</h3>
-                    <p
-                      className="whitespace-normal break-words"
-                      dangerouslySetInnerHTML={{
-                        __html: selectedLiturgia.primeiraLeitura,
-                      }}
-                    />
-                  </div>
-                )}
-                {visibleLeitura === "segundaLeitura" &&
-                  selectedLiturgia.segundaLeitura && (
-                    <div>
-                      <h3 className="text-lg font-semibold">Segunda Leitura</h3>
-                      <p
-                        className="whitespace-normal break-words"
-                        dangerouslySetInnerHTML={{
-                          __html: selectedLiturgia.segundaLeitura,
-                        }}
-                      />
-                    </div>
-                  )}
-                {visibleLeitura === "salmoResponsorial" && (
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      Salmo Responsorial
-                    </h3>
-                    <p
-                      className="whitespace-normal break-words"
-                      dangerouslySetInnerHTML={{
-                        __html: selectedLiturgia.salmoResponsorial,
-                      }}
-                    />
-                  </div>
-                )}
-                {visibleLeitura === "evangelho" && (
-                  <div>
-                    <h3 className="text-lg font-semibold">Evangelho</h3>
-                    <p
-                      className="whitespace-normal break-words"
-                      dangerouslySetInnerHTML={{
-                        __html: selectedLiturgia.evangelho,
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <p className={`text-center ${fontSize}`}>
-              Nenhuma liturgia disponível para a data selecionada.
+            <p className="flex m-2 mb-4 font-light text-sm">
+              Cor Litúrgica:{" "}
+              <span className="mb-2 px-2" dangerouslySetInnerHTML={{ __html: selectedLiturgia.corLiturgica }} />
             </p>
-          )}
-        </div>
 
-        <div className="hidden sm:block sm:w-1/3 sm:pl-4">
-          <div className="flex justify-center">
-            <Calendar
-              onChange={(value) => handleDateChange(value as Date)} // Cast to Date
-              value={selectedDate}
-              className="react-calendar w-full"
-            />
+            <div className="flex mb-4 justify-end">
+              <button onClick={decreaseFontSize} className="px-3 sm:px-4 py-1 sm:py-2 shadow-xl rounded-lg">
+                A-
+              </button>
+              <button onClick={increaseFontSize} className="px-3 sm:px-4 py-1 sm:py-2 rounded-lg shadow-xl ml-2">
+                A+
+              </button>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              <button
+                className={`w-auto px-4 py-2 text-zinc-900 border-2 rounded-md ${visibleLeitura === "primeiraLeitura" ? "border-yellow-400" : "hover:bg-yellow-500"
+                  }`}
+                onClick={() => handleLeituraVisibility("primeiraLeitura")}
+              >
+                1° Leitura
+              </button>
+              {selectedLiturgia?.segundaLeitura && selectedLiturgia.segundaLeitura.trim() !== "" ? (
+                <button
+                  className={`w-auto px-4 py-2 text-zinc-900 border-2 rounded-md ${visibleLeitura === "segundaLeitura" ? "border-yellow-400" : "hover:bg-yellow-500"
+                    }`}
+                  onClick={() => handleLeituraVisibility("segundaLeitura")}
+                >
+                  2° Leitura
+                </button>
+              ) : null}
+
+
+
+              <button
+                className={`w-auto px-4 py-2 text-zinc-900 border-2 rounded-md ${visibleLeitura === "salmoResponsorial" ? "border-yellow-400" : "hover:bg-yellow-500"
+                  }`}
+                onClick={() => handleLeituraVisibility("salmoResponsorial")}
+              >
+                Salmo Responsorial
+              </button>
+              <button
+                className={`w-auto px-4 py-2 text-zinc-900 border-2 rounded-md ${visibleLeitura === "evangelho" ? "border-yellow-400" : "hover:bg-yellow-500"
+                  }`}
+                onClick={() => handleLeituraVisibility("evangelho")}
+              >
+                Evangelho
+              </button>
+            </div>
+
+            <div className="mb-4 text-zinc-900">
+              {visibleLeitura === "primeiraLeitura" && (
+                <div>
+                  <h3 className="text-lg font-semibold">Primeira Leitura</h3>
+                  <p className="font-sans whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedLiturgia.primeiraLeitura }} />
+                </div>
+              )}
+              {visibleLeitura === "segundaLeitura" &&
+                selectedLiturgia.segundaLeitura &&
+                selectedLiturgia.segundaLeitura.trim() !== "" && (
+                  <div>
+                    <h3 className="text-lg font-semibold">Segunda Leitura</h3>
+                    <p className="font-sans whitespace-pre-wrap break-words " dangerouslySetInnerHTML={{ __html: selectedLiturgia.segundaLeitura }} />
+                  </div>
+                )}
+              {visibleLeitura === "salmoResponsorial" && (
+                <div>
+                  <h3 className="text-lg font-semibold">Salmo Responsorial</h3>
+                  <p className="font-sans whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedLiturgia.salmoResponsorial }} />
+                </div>
+              )}
+              {visibleLeitura === "evangelho" && (
+                <div>
+                  <h3 className="text-lg font-semibold">Evangelho</h3>
+                  <p className="font-sans whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: selectedLiturgia.evangelho }} />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className={`text-center ${fontSize} text-zinc-900`}>Nenhuma liturgia disponível para a data selecionada.</p>
+        )}
       </div>
     </div>
   );

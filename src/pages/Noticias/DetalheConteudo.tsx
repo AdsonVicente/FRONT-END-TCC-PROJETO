@@ -6,6 +6,8 @@ import { ptBR } from "date-fns/locale";
 import { api } from "../../services/api";
 import { FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
 
+const baseUrl = import.meta.env.VITE_BASE_URL;
+
 interface Noticia {
   id: string;
   titulo: string;
@@ -144,25 +146,26 @@ const DetalheConteudo: React.FC = () => {
 
       <div className="flex justify-center mb-8">
         <img
-          src={`http://localhost:3000/${conteudo.banner}`}
+          src={`${baseUrl}/${conteudo.banner}`}
           alt={conteudo.titulo}
           className="w-full h-auto object-cover rounded-lg shadow-md"
           style={{ maxHeight: "500px", maxWidth: "1200px" }}
         />
       </div>
 
-      <div className="prose prose-lg max-w-none text-gray-700 mx-auto mb-8">
+      <div className="prose prose-lg max-w-none text-gray-700 mx-auto mb-8 ">
         {conteudo.descricao.split("\n").map((paragraph, index) => (
           <p key={index} dangerouslySetInnerHTML={{ __html: paragraph }} />
         ))}
       </div>
-
-      <div className="flex justify-center items-center text-gray-600">
-        <p>
-          {formattedDate} - Autor:{" "}
-          <span className="font-semibold">{conteudo.autor}</span>
-        </p>
+      <div className="flex  items-center space-x-2 text-gray-600">
+        <p
+          dangerouslySetInnerHTML={{
+            __html: `${formattedDate} - Autor: <span class="font-semibold">${conteudo.autor}</span>`
+          }}
+        ></p>
       </div>
+
     </div>
   );
 };

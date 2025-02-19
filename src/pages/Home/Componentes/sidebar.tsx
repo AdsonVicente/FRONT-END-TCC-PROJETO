@@ -1,9 +1,6 @@
 import {
   FaYoutube,
   FaDonate,
-  FaFacebook,
-  FaInstagram,
-  FaEnvelope,
 } from "react-icons/fa";
 import CountdownTimer from "./timer";
 import { useEffect, useState } from "react";
@@ -27,9 +24,9 @@ const NewsCard = ({ date, title, imageUrl, link }: any) => {
         <Link
           to={link}
           className="text-gray-900 font-semibold hover:text-red-600 leading-tight"
-        >
-          {title}
-        </Link>
+          dangerouslySetInnerHTML={{ __html: title }}
+        ></Link>
+
       </div>
     </div>
   );
@@ -37,16 +34,13 @@ const NewsCard = ({ date, title, imageUrl, link }: any) => {
 
 const Sidebar = () => {
   const [news, setNews] = useState([]);
-  const [santoSemana, setSantoSemana] = useState<any>(null);
 
   useEffect(() => {
     const fetchConteudo = async () => {
       try {
         const response = await api.get("/conteudos");
         const filteredNews = response.data
-          .filter((conteudo: any) =>
-            ["papo jovem", "fundador"].includes(conteudo.categoria.name)
-          )
+          .slice(0, 6)
           .map((conteudo: any) => ({
             id: conteudo.id,
             title: conteudo.titulo,
@@ -60,13 +54,10 @@ const Sidebar = () => {
             }),
           }));
 
-        // Filtrando pelo conteúdo que pertence à categoria 'destaque'
-        const santo = response.data.find(
-          (conteudo: any) => conteudo.categoria.name === "destaque"
-        );
+
 
         setNews(filteredNews);
-        setSantoSemana(santo);
+
       } catch (error) {
         console.error("Houve um erro ao buscar os conteúdos", error);
       }
@@ -97,8 +88,6 @@ const Sidebar = () => {
             <a
               href="/doacao"
               className="flex items-center space-x-3 p-4 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition duration-300"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               <FaDonate className="text-2xl" />
               <span>Faça uma Doação</span>
@@ -116,81 +105,31 @@ const Sidebar = () => {
           </div>
         </section>
 
-        {/* Seção de Redes Sociais */}
+        {/* Seção de Liturgia Diária */}
         <div className="p-6 bg-white rounded-lg shadow-md">
           <h3 className="text-2xl font-bold mb-4 text-gray-800 text-center">
-            Encontre-nos
+            Liturgia Diária
           </h3>
-          <div className="flex justify-center space-x-6">
-            <a
-              href="https://www.facebook.com/comcatolicaagape"
-              className="p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 hover:shadow-xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-            >
-              <FaFacebook className="text-2xl" />
-            </a>
-            <a
-              href="mailto:example@example.com"
-              className="p-3 bg-blue-400 text-white rounded-full shadow-lg hover:bg-blue-500 hover:shadow-xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Email"
-            >
-              <FaEnvelope className="text-2xl" />
-            </a>
-            <a
-              href="https://www.instagram.com/comunidadecatolicaagape?igshid=YmMyMTA2M2Y%3D"
-              className="p-3 bg-pink-600 text-white rounded-full shadow-lg hover:bg-pink-700 hover:shadow-xl transition-transform transform hover:scale-105 duration-300 ease-in-out"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-            >
-              <FaInstagram className="text-2xl" />
-            </a>
+          <div className="text-center">
+            <Link to="/liturgia-diaria" className="text-red-600 font-semibold hover:underline">
+              Acesse aqui
+            </Link>
           </div>
         </div>
 
-        {/* Santo da Semana */}
-        {santoSemana && (
-          <a
-            href={`/conteudo/${santoSemana.id}`}
-            className="group relative block bg-black overflow-hidden shadow-md"
-          >
-            <img
-              alt={santoSemana.titulo}
-              src={`${baseUrl}/${santoSemana.banner}`}
-              className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
+        {/* Destaques */}
+        <div className="bg-white rounded-lg mt-4">
+          <h2 className="text-2xl font-normal text-gray-800 mb-4">Destaques</h2>
+          {news.map((item: any) => (
+            <NewsCard
+              key={item.id}
+              date={item.date}
+              title={item.title}
+              imageUrl={item.imageUrl}
+              link={`/conteudos/${item.id}`}
             />
-            <div className="relative p-4 sm:p-6 lg:p-8">
-              <p className="text-sm font-medium uppercase tracking-widest text-yellow-500">
-                Santo da Semana
-              </p>
-              <p className="text-xl font-bold text-white sm:text-2xl">
-                {santoSemana.titulo}
-              </p>
-              <div className="mt-32 sm:mt-48 lg:mt-64">
-                <div className="translate-y-8 transform opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                  <p className="text-sm text-white">{santoSemana.resumo}</p>
-                </div>
-              </div>
-            </div>
-          </a>
-        )}
-      </div>
-      {/* Destaques */}
-      <div className=" bg-white rounded-lg mt-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Destaques</h2>
-        {news.map((item: any) => (
-          <NewsCard
-            key={item.id}
-            date={item.date}
-            title={item.title}
-            imageUrl={item.imageUrl}
-            link={item.link}
-          />
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -16,6 +16,9 @@ const CadastrarAdministrador: React.FC<CadastrarAdministradorProps> = ({
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmSenha, setConfirmSenha] = useState("");
+  const [tipoAdm, setTipoAdm] = useState("ADMGERAL"); // Valor padrão
+
+
   const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -27,7 +30,7 @@ const CadastrarAdministrador: React.FC<CadastrarAdministradorProps> = ({
     }
 
     try {
-      await api.post("/administradores", { nome, email, senha });
+      await api.post("/administradores", { nome, email, senha, tipo: tipoAdm });
 
       toast.success("Administrador cadastrado com sucesso!");
       if (onSuccess) onSuccess(); // Chama a função de callback se fornecida
@@ -103,6 +106,30 @@ const CadastrarAdministrador: React.FC<CadastrarAdministradorProps> = ({
               className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+          </div>
+
+          <div className="grid gap-2">
+            <label htmlFor="tipo-adm" className="text-gray-700">
+              Tipo de Administrador
+            </label>
+            <select
+              id="tipo-adm"
+              value={tipoAdm}
+              onChange={(e) => setTipoAdm(e.target.value)}
+              className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="ADMGERAL">Administrador Geral</option>
+              <option value="ADMEVENTOS">Administrador de Eventos</option>
+              <option value="ADMCONTEUDOS">Administrador de Conteúdos</option>
+              <option value="ADMLITURGIA">Administrador de Liturgia</option>
+              <option value="ADMEVENTOS_E_CONTEUDOS">Eventos e Conteúdos</option>
+              <option value="ADMEVENTOS_CONTEUDOS_E_LITURGIA">
+                Eventos, Conteúdos e Liturgia
+              </option>
+              <option value="ADMEVENTOS_E_LITURGIA">Eventos e Liturgia</option>
+              <option value="ADMCONTEUDOS_E_LITURGIA">Conteúdos e Liturgia</option>
+            </select>
           </div>
 
           <button

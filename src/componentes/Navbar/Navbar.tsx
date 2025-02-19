@@ -6,21 +6,21 @@ import {
   faChevronDown,
   faPlay,
   faSearch,
+  faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 
 const NavbarItems = [
-  { name: "Sobre nós", href: "/historia" },
-  { name: "Nossos Fundadores", href: "/fundadores" },
+  { name: "Sobre Nós", href: "/historia" },
+  { name: "Fundadores", href: "/fundadores" },
   { name: "Contato", href: "/contato" },
 ];
 
 const NavbarMobile = [
-  { name: "História", href: "/historia" },
-  { name: "Fundadores", href: "/fundadores" },
   { name: "Notícias", href: "/noticias" },
   { name: "Formação", href: "/formacao" },
   { name: "Eventos", href: "/eventos" },
   { name: "Liturgia", href: "/liturgia-diaria" },
+  { name: "Multimidia", href: "/multimidia" },
 ];
 
 const Navbar = () => {
@@ -29,47 +29,55 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: any) => {
     e.preventDefault();
     navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
-    setSearchQuery(""); // Limpa o campo de busca após a pesquisa
+    setSearchQuery("");
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md p-6">
-      <nav className="container mx-auto flex flex-col lg:flex-row items-center justify-between">
-        {/* Logo e Nome */}
-        <div className="flex items-center w-full justify-between lg:justify-start">
-          <Link to="/" className="flex items-center">
-            <h1 className="text-xl lg:text-3xl font-bold text-red-500 hover:text-yellow-600">
-              Comunidade Católica Ágape
-            </h1>
-          </Link>
-          <button
-            className="lg:hidden p-2 text-gray-700 hover:text-red-600 transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-red-500 to-yellow-500 shadow-md">
+      <nav className="container mx-auto flex flex-wrap items-center justify-between p-4 lg:p-6">
+        {/* Logo */}
+        <div className="flex items-center">
+          <Link
+            to="/"
+            className="flex items-center gap-3 text-white text-xl sm:text-2xl  font-bold"
           >
-            <FontAwesomeIcon icon={faBars} className="w-6 h-6" />
-          </button>
+            <img
+              src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/logo.png?raw=true"
+              alt="Logo Comunidade Ágape"
+              className="h-10 sm:h-12 w-auto"
+            />
+            <div className="lg:hidden px-5 text-white">
+              <span>Comunidade Ágape</span>
+            </div>
+            <div className="hidden lg:block text-white">
+              <span>Comunidade Ágape</span>
+            </div>
+          </Link>
         </div>
 
-        {/* Barra de Navegação Inferior Desktop */}
-        <div className="hidden lg:flex lg:items-center lg:space-x-6 lg:w-full">
+        {/* Desktop Menu */}
+        <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
           <div className="relative group">
             <button
-              className="flex items-center text-gray-700 hover:text-red-600 uppercase font-semibold"
               onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="text-white uppercase font-medium hover:text-yellow-200 flex items-center"
             >
               Comunidade
-              <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={`ml-2 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+              />
             </button>
             {dropdownOpen && (
-              <div className="absolute z-50 mt-2 bg-white border border-gray-200 rounded-md shadow-lg">
+              <div className="absolute bg-white rounded-lg shadow-lg mt-2 p-4 z-50">
                 {NavbarItems.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    className="block px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white rounded-md transition-all"
                     onClick={() => setDropdownOpen(false)}
                   >
                     {item.name}
@@ -78,78 +86,88 @@ const Navbar = () => {
               </div>
             )}
           </div>
-          {NavbarMobile.slice(2).map((item) => (
+
+          {NavbarMobile.map((item) => (
             <Link
               key={item.name}
               to={item.href}
-              className="text-gray-700 hover:text-red-600 uppercase font-semibold"
+              className="text-white uppercase font-medium hover:text-yellow-200 transition-all"
             >
               {item.name}
             </Link>
           ))}
-          {/* Barra de Pesquisa e Rádio ao Vivo */}
-          <form
-            onSubmit={handleSearch}
-            className="flex items-center space-x-4 ml-4"
-          >
+
+          {/* Search Bar */}
+          <form onSubmit={handleSearch} className="flex items-center space-x-3">
             <input
               type="text"
               placeholder="Buscar..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="px-3 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-600"
+              className="px-4 py-2 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-300"
             />
-            <button
-              type="submit"
-              className="p-2 text-gray-500 hover:text-red-600"
-            >
+            <button type="submit" className="text-white hover:text-yellow-200 transition-all">
               <FontAwesomeIcon icon={faSearch} />
             </button>
           </form>
+
+          {/* Radio Button */}
           <Link
             to="/Radio"
             target="_blank"
-            className="flex items-center bg-red-600 hover:bg-red-700 rounded-full py-2 px-4 ml-4 text-white text-sm font-medium transition-transform transform hover:scale-105 hover:shadow-lg hover:shadow-red-500/50"
+            className="bg-yellow-400 hover:bg-yellow-500 text-white rounded-full px-6 py-2 flex items-center shadow-md transition-transform transform hover:scale-105"
           >
-            <FontAwesomeIcon icon={faPlay} className="mr-2 text-lg" />
-            <span className="font-semibold">Rádio</span>
+            <FontAwesomeIcon icon={faPlay} className="mr-2" /> Rádio
           </Link>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="lg:hidden text-white text-xl"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
       </nav>
 
-      {/* Menu Mobile */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-gray-200">
-          <div className="px-4 py-2">
-            <form onSubmit={handleSearch} className="flex items-center mb-4">
-              <input
-                type="text"
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="px-3 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-600 w-full"
-              />
-              <button
-                type="submit"
-                className="p-2 text-gray-500 hover:text-red-600"
-              >
-                <FontAwesomeIcon icon={faSearch} />
-              </button>
-            </form>
-            {NavbarMobile.map((item) => (
+        <div className="lg:hidden bg-white shadow-lg">
+          <div className="p-4">
+            {NavbarItems.concat(NavbarMobile).map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className="block px-4 py-2 text-black hover:bg-gray-100"
+                className="block text-gray-700 py-2 px-4 hover:bg-yellow-500 hover:text-white rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
+{/* Rádio Button */}
+<Link
+  to="/Radio"
+  target="_blank"
+  className="flex items-center justify-center bg-red-600 text-white py-2 rounded-md mt-4 shadow-md"
+  onClick={() => setMobileMenuOpen(false)}
+>
+  <FontAwesomeIcon icon={faPlay} className="mr-2 text-lg" /> Rádio
+</Link>
+
+{/* Doação Button */}
+<Link
+  to="/Doacao"
+  className="flex items-center justify-center bg-yellow-400 text-white 400 py-2 rounded-md mt-4 "
+  onClick={() => setMobileMenuOpen(false)}
+>
+  <FontAwesomeIcon icon={faHeart} className="mr-2 text-lg" /> Doar Agora
+</Link>
+
           </div>
         </div>
       )}
     </header>
+
   );
 };
 

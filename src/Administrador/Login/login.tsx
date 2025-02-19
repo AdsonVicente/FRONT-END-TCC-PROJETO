@@ -75,14 +75,14 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen  p-6">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md bg-gradient-to-r from-yellow-400 to-yellow-500">
+    <div className="flex items-center justify-center min-h-screen p-6 bg-gradient-to-r from-yellow-400 to-yellow-500">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">
           Acesso - Comunidade Católica Ágape
         </h2>
 
-        <form onSubmit={signIn} noValidate className="">
-          <div className="mb-5 ">
+        <form onSubmit={signIn} noValidate>
+          <div className="mb-5">
             <label
               htmlFor="email"
               className="block text-gray-700 text-sm font-medium mb-2"
@@ -93,9 +93,7 @@ export default function Login() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full p-4 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300 ${
-                error.email ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-4 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300 ${error.email ? "border-red-500" : "border-gray-300"}`}
               placeholder="Digite seu email"
               autoComplete="email"
               type="email"
@@ -122,9 +120,7 @@ export default function Login() {
               id="password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className={`w-full p-4 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300 ${
-                error.password ? "border-red-500" : "border-gray-300"
-              }`}
+              className={`w-full p-4 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300 ${error.password ? "border-red-500" : "border-gray-300"}`}
               placeholder="Digite sua senha"
               autoComplete="current-password"
               type={showPassword ? "text" : "password"}
@@ -152,11 +148,10 @@ export default function Login() {
           </div>
 
           <button
-            className={`w-full p-4 rounded-md text-black font-semibold transition duration-300 ease-in-out focus:outline-none ${
-              loading
-                ? "bg-white cursor-not-allowed"
-                : "bg-white hover:bg-zinc-600"
-            }`}
+            className={`w-full p-4 rounded-md text-white font-semibold transition duration-300 ease-in-out focus:outline-none ${loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-yellow-500 hover:bg-yellow-600"
+              }`}
             type="submit"
             disabled={loading}
             aria-busy={loading}
@@ -168,7 +163,7 @@ export default function Login() {
         <div className="mt-8 text-center text-gray-600">
           <p className="text-sm">
             Esqueceu sua senha?{" "}
-            <a href="/contato" className="text-zinc-900 hover:underline">
+            <a href="mailto:admin@agape.com" className="text-blue-500 hover:underline">
               Entre em contato com o administrador
             </a>{" "}
             para recuperação de conta.

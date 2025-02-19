@@ -9,7 +9,7 @@ import SaoFranciscoPage from "./pages/sobre/santos/francisco";
 import Eventos from "./pages/Eventos/evento";
 import RadioPlayer from "./pages/Radio/radio";
 import Noticias from "./pages/Noticias/Noticias";
-import { Fundadores } from "./pages/Fundadores/Fundadores";
+import Fundadores from "./pages/Fundadores/Fundadores";
 
 import "aos/dist/aos.css"; // Importa o CSS do AOS
 
@@ -54,12 +54,18 @@ import GerenciarLiturgia from "./Administrador/Gerenciamento/GerenciarLiturgia/G
 import EditarLiturgia from "./Administrador/Gerenciamento/GerenciarLiturgia/EditarLiturgia";
 import GerenciarEventos from "./Administrador/Gerenciamento/GerenciamentoEventos/GerenciarEvento";
 import ComunidadeAgape from "./pages/sobre/associacao";
+import AgapeCasaisPage from "./pages/Casais/AgapeParaCasais";
+import AgapeKidsPage from "./pages/Criancas/AgapeParaCriancas";
+import LoadingWithLogo from "./pages/Home/LoadingWithLogo";
+import MultimediaPage from "./multimidiaPage";
+import Missoes from "./pages/Home/Componentes/missoes";
+
 
 AOS.init();
 
 const App = () => {
   const [isConteudosModalOpen, setIsConteudosModalOpen] = useState(false);
-  const [conteudos, setConteudos] = useState([]);
+  const [conteudos, _setConteudos] = useState([]);
 
   const handleCloseConteudosModal = () => {
     setIsConteudosModalOpen(false);
@@ -67,6 +73,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <LoadingWithLogo />
       <ToastContainer autoClose={3000} />
       <BrowserRouter>
         <AuthProvider>
@@ -80,12 +87,42 @@ const App = () => {
                 </Layout>
               }
             />
+
             <Route
               path="/liturgia-diaria"
               element={
                 <Layout>
                   {" "}
                   <LiturgiaDiaria />{" "}
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/Multimidia"
+              element={
+                <Layout>
+                  {" "}
+                  <MultimediaPage />{" "}
+                </Layout>
+              }
+            />
+            <Route
+              path="/AgapeKids"
+              element={
+                <Layout>
+                  {" "}
+                  <AgapeKidsPage />{" "}
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/AgapeParaCasais"
+              element={
+                <Layout>
+                  {" "}
+                  <AgapeCasaisPage />{" "}
                 </Layout>
               }
             />
@@ -229,6 +266,16 @@ const App = () => {
               }
             />
 
+
+            <Route
+              path="/missoes"
+              element={
+                <Layout>
+                  <Missoes />
+                </Layout>
+              }
+            />
+
             {/* Administrativas */}
             <Route
               path="/conteudos/editar/:id"
@@ -238,6 +285,8 @@ const App = () => {
                 </ProtectAdmConteudosLayout>
               }
             />
+
+            
 
             <Route
               path="/gerenciarcategoria"
@@ -260,6 +309,7 @@ const App = () => {
                 </AdmNavbar>
               }
             />
+
             <Route
               path="/gerenciarevento"
               element={

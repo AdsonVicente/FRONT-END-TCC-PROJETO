@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import { api } from "../../../services/api";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
 
 // Define os tipos para os conteúdos
 interface Liturgia {
@@ -17,10 +14,10 @@ const GerenciarLiturgia: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [liturgias, setLiturgias] = useState<Liturgia[]>([]);
   const [filteredLiturgias, setFilteredLiturgias] = useState<Liturgia[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [data, setData] = useState<Liturgia[]>([]);
+  const [_isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [_data, setData] = useState<Liturgia[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedConteudoId, setSelectedConteudoId] = useState<string | null>(
+  const [_selectedConteudoId, _setSelectedConteudoId] = useState<string | null>(
     null
   );
   const [deleteId, setDeleteId] = useState<string>("");

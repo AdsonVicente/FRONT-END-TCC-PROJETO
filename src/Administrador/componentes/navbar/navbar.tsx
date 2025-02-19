@@ -37,7 +37,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="relative bg-zinc-900 text-white shadow-md p-4">
+    <header className="relative bg-blue-800 text-black shadow-md p-4">
       <nav className="container mx-auto flex items-center justify-between">
         {/* Button to open mobile menu */}
         <button
@@ -52,8 +52,8 @@ const Navbar = () => {
         </button>
 
         {/* Logo */}
-        <Link to="/dashboard" className="text-xl font-bold text-red-500">
-          Administração Comunidade
+        <Link to="/dashboard" className="text-xl font-bold text-white">
+          Painel Administrativo Ágape
         </Link>
 
         {/* Desktop Navbar */}
@@ -69,7 +69,7 @@ const Navbar = () => {
           ))}
           <button
             onClick={handleLogout}
-            className="flex items-center p-2 text-red-500 hover:text-red-400 font-semibold"
+            className="flex items-center p-2 text-white hover:text-red-400 font-semibold"
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
             Sair da Conta

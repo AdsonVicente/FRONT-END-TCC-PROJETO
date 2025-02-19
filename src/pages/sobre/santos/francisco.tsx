@@ -6,7 +6,7 @@ export default function SaoFranciscoPage() {
         {/* Imagem de São Francisco */}
         <div className="text-center mb-12">
           <img
-            src="https://github.com/AdsonVicente/ImagensUrlDados/blob/main/sao-francisco-de-assis-.jpg?raw=true"
+            src="https://www.sistemapositivo.com.br/wp-content/uploads/2021/07/sao_francisco_de_assis-2.jpg"
             alt="São Francisco de Assis"
             className="w-full max-w-sm h-auto mx-auto mb-6 shadow-lg rounded-lg"
           />

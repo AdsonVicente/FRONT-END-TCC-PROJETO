@@ -24,10 +24,10 @@ const GerenciarConteudos: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [conteudos, setConteudos] = useState<Conteudo[]>([]);
   const [filteredConteudos, setFilteredConteudos] = useState<Conteudo[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [data, setData] = useState<Conteudo[]>([]);
+  const [_isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [_data, setData] = useState<Conteudo[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedConteudoId, setSelectedConteudoId] = useState<string | null>(
+  const [_selectedConteudoId, _setSelectedConteudoId] = useState<string | null>(
     null
   );
   const [deleteId, setDeleteId] = useState<string>("");
@@ -40,13 +40,21 @@ const GerenciarConteudos: React.FC = () => {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(filteredConteudos.length / itemsPerPage);
 
+  // Função para ordenar os conteúdos por data
+  const sortByDate = (conteudos: Conteudo[]) => {
+    return conteudos.sort((a, b) => new Date(b.publicadoEm).getTime() - new Date(a.publicadoEm).getTime());
+  };
+
+  // Função para buscar os conteúdos
   const fetchConteudos = useCallback(async () => {
     try {
       const response = await api.get("/conteudos");
-      setConteudos(response.data);
-      setFilteredConteudos(response.data);
+      const sortedConteudos = sortByDate(response.data); // Ordena os conteúdos pela data de publicação
+      setConteudos(sortedConteudos);
+      setFilteredConteudos(sortedConteudos); // Inicializa os conteúdos filtrados
     } catch (error) {
       console.error("Houve um erro ao buscar os conteúdos", error);
+      toast.error("Erro ao buscar os conteúdos.");
     }
   }, []);
 
@@ -249,9 +257,8 @@ const GerenciarConteudos: React.FC = () => {
           {/* Pagination */}
           <div className="flex items-center justify-between mt-4">
             <button
-              className={`bg-blue-600 text-white py-2 px-4 rounded-lg text-xs sm:text-sm ${
-                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`bg-blue-600 text-white py-2 px-4 rounded-lg text-xs sm:text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               onClick={handlePrevPage}
               disabled={currentPage === 1}
             >
@@ -261,11 +268,10 @@ const GerenciarConteudos: React.FC = () => {
               Página {currentPage} de {totalPages}
             </span>
             <button
-              className={`bg-blue-600 text-white py-2 px-4 rounded-lg text-xs sm:text-sm ${
-                currentPage === totalPages
+              className={`bg-blue-600 text-white py-2 px-4 rounded-lg text-xs sm:text-sm ${currentPage === totalPages
                   ? "opacity-50 cursor-not-allowed"
                   : ""
-              }`}
+                }`}
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
             >

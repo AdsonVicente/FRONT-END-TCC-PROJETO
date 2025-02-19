@@ -5,8 +5,8 @@ import { FaTrash } from "react-icons/fa";
 
 const CreateCategoryForm: React.FC = () => {
   const [nome, setNome] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
+  const [_success, setSuccess] = useState<string | null>(null);
   const [categorias, setCategorias] = useState([]); // Estado para armazenar categorias
   const [showModal, setShowModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
