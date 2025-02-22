@@ -58,7 +58,7 @@ import AgapeKidsPage from "./pages/Criancas/AgapeParaCriancas";
 import LoadingWithLogo from "./pages/Home/LoadingWithLogo";
 import MultimediaPage from "./multimidiaPage";
 import Missoes from "./pages/Home/Componentes/missoes";
-import DonationSection from "./pages/Doacao/doacao";
+import Doacao from "./pages/Doacao/doacao";
 
 
 AOS.init();
@@ -149,7 +149,7 @@ const App = () => {
               element={
                 <Layout>
                   {" "}
-                  <DonationSection />
+                  <Doacao />{" "}
                 </Layout>
               }
             />

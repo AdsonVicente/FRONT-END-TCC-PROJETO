@@ -1,6 +1,6 @@
 import React from "react";
 
-const DonationSection: React.FC = () => {
+const Doacao: React.FC = () => {
   const chavePix = "79999504661"; // Sua chave Pix aqui
 
   return (
@@ -62,4 +62,4 @@ const DonationSection: React.FC = () => {
   );
 };
 
-export default DonationSection;
+export default Doacao;
