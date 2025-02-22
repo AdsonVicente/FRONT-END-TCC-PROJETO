@@ -34,19 +34,19 @@ const SearchResults = () => {
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   // Definindo cores para as novas categorias
-const categoryColors: { [key: string]: string } = {
-  "noticias gerais": "text-yellow-400",
-  papa: "text-red-500",
-  eventos: "text-blue-400",
-  espiritualidade: "text-green-500",
-  "santos e santas": "text-purple-500",
-  opiniao: "text-orange-400",
-  "familia e vida": "text-pink-400",
-  "missoes e caridade": "text-teal-400",
-  "liturgia e sacramentos": "text-indigo-500",
-  juventude: "text-cyan-500",
-  "cultura e arte sacra": "text-brown-400",
-};
+  const categoryColors: { [key: string]: string } = {
+    "noticias gerais": "text-yellow-400",
+    papa: "text-red-500",
+    eventos: "text-blue-400",
+    espiritualidade: "text-green-500",
+    "santos e santas": "text-purple-500",
+    opiniao: "text-orange-400",
+    "familia e vida": "text-pink-400",
+    "missoes e caridade": "text-teal-400",
+    "liturgia e sacramentos": "text-indigo-500",
+    juventude: "text-cyan-500",
+    "cultura e arte sacra": "text-brown-400",
+  };
 
   const fetchContents = async () => {
     setLoading(true);
@@ -155,9 +155,8 @@ const categoryColors: { [key: string]: string } = {
           </h2>
           <ul className={`mb-6 ${showCategories ? "" : "hidden"} lg:block`}>
             <li
-              className={`cursor-pointer ${
-                selectedCategory === "" ? "font-bold" : ""
-              }`}
+              className={`cursor-pointer ${selectedCategory === "" ? "font-bold" : ""
+                }`}
               onClick={() => handleCategoryChange("")}
             >
               Todas
@@ -165,9 +164,8 @@ const categoryColors: { [key: string]: string } = {
             {categories.map((category) => (
               <li
                 key={category}
-                className={`cursor-pointer ${
-                  selectedCategory === category ? "font-bold" : ""
-                }`}
+                className={`cursor-pointer ${selectedCategory === category ? "font-bold" : ""
+                  }`}
                 onClick={() => handleCategoryChange(category)}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -183,9 +181,8 @@ const categoryColors: { [key: string]: string } = {
           </h2>
           <ul className={`mb-6 ${showAuthors ? "" : "hidden"} lg:block`}>
             <li
-              className={`cursor-pointer ${
-                selectedAuthor === "" ? "font-bold" : ""
-              }`}
+              className={`cursor-pointer ${selectedAuthor === "" ? "font-bold" : ""
+                }`}
               onClick={() => handleAuthorChange("")}
             >
               Todos
@@ -193,9 +190,8 @@ const categoryColors: { [key: string]: string } = {
             {authors.map((author) => (
               <li
                 key={author}
-                className={`cursor-pointer ${
-                  selectedAuthor === author ? "font-bold" : ""
-                }`}
+                className={`cursor-pointer ${selectedAuthor === author ? "font-bold" : ""
+                  }`}
                 onClick={() => handleAuthorChange(author)}
               >
                 {author}

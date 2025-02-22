@@ -144,24 +144,24 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-{/* Rádio Button */}
-<Link
-  to="/Radio"
-  target="_blank"
-  className="flex items-center justify-center bg-red-600 text-white py-2 rounded-md mt-4 shadow-md"
-  onClick={() => setMobileMenuOpen(false)}
->
-  <FontAwesomeIcon icon={faPlay} className="mr-2 text-lg" /> Rádio
-</Link>
+            {/* Rádio Button */}
+            <Link
+              to="/Radio"
+              target="_blank"
+              className="flex items-center justify-center bg-red-600 text-white py-2 rounded-md mt-4 shadow-md"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <FontAwesomeIcon icon={faPlay} className="mr-2 text-lg" /> Rádio
+            </Link>
 
-{/* Doação Button */}
-<Link
-  to="/Doacao"
-  className="flex items-center justify-center bg-yellow-400 text-white 400 py-2 rounded-md mt-4 "
-  onClick={() => setMobileMenuOpen(false)}
->
-  <FontAwesomeIcon icon={faHeart} className="mr-2 text-lg" /> Doar Agora
-</Link>
+            {/* Doação Button */}
+            <Link
+              to="/Doacao"
+              className="flex items-center justify-center bg-yellow-400 text-white 400 py-2 rounded-md mt-4 "
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <FontAwesomeIcon icon={faHeart} className="mr-2 text-lg" /> Doar Agora
+            </Link>
 
           </div>
         </div>

@@ -34,7 +34,6 @@ import ProtectAdmEventosLayout from "./Administrador/layout/AdmEventosLayout";
 import ProtectAdmLiturgiaLayout from "./Administrador/layout/AdmLiturgiaLayout";
 import LiturgiaDiaria from "./pages/Liturgia-diaria/LiturgiaDiaria";
 import EventosInscricaoForm from "./Formulario/inscrição";
-import DoacaoPix from "./pages/Doacao/doacao";
 
 import DetalheEvento from "./pages/Eventos/DetalheEvento";
 
@@ -59,6 +58,7 @@ import AgapeKidsPage from "./pages/Criancas/AgapeParaCriancas";
 import LoadingWithLogo from "./pages/Home/LoadingWithLogo";
 import MultimediaPage from "./multimidiaPage";
 import Missoes from "./pages/Home/Componentes/missoes";
+import DonationSection from "./pages/Doacao/doacao";
 
 
 AOS.init();
@@ -149,7 +149,7 @@ const App = () => {
               element={
                 <Layout>
                   {" "}
-                  <DoacaoPix />
+                  <DonationSection />
                 </Layout>
               }
             />
@@ -286,7 +286,7 @@ const App = () => {
               }
             />
 
-            
+
 
             <Route
               path="/gerenciarcategoria"

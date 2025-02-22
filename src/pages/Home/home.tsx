@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../../services/api";
 import BemVindoSecao from "./Componentes/SlideHome";
 import Sidebar from "./Componentes/sidebar";
 import MusicasSecao from "./Componentes/musicas";
@@ -43,20 +42,36 @@ const Home = () => {
   const [newsLimit, setNewsLimit] = useState(12);
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const [conteudosUnicos, setConteudosUnicos] = useState<any[]>([]);
+
+
   const fetchConteudo = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get("/conteudos");
-      // Filtrar conteúdos duplicados com base no ID
-      const conteudosFiltrados = response.data.reduce((acc: any[], conteudo: any) => {
-        if (!acc.some((item) => item.id === conteudo.id)) {
-          acc.push(conteudo);
+      const response = await fetch("https://backend-comagapeorg-production.up.railway.app/api/v1/conteudos", {
+        method: "GET",
+        headers: {
+          "Origin": "https://comagape.org", // Adiciona o cabeçalho Origin
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao buscar os conteúdos.");
+      }
+
+      const data = await response.json();
+
+      // Criar um Map para garantir que os conteúdos sejam únicos
+      const conteudosMap = new Map();
+
+      data.forEach((conteudo: any) => {
+        if (!conteudosMap.has(conteudo.id)) {
+          conteudosMap.set(conteudo.id, conteudo);
         }
-        return acc;
-      }, []);
-      setConteudosUnicos(conteudosFiltrados);
-      const conteudos = response.data
+      });
+
+      // Transformar o Map de volta em um array e ordenar os conteúdos por data de publicação
+      const conteudosUnicos = Array.from(conteudosMap.values())
         .map((conteudo: any) => ({
           id: conteudo.id,
           titulo: conteudo.titulo,
@@ -66,19 +81,14 @@ const Home = () => {
           publicadoEm: conteudo.publicadoEm,
           categoriaId: conteudo.categoria.id,
           categoria: {
+            id: conteudo.categoria.id,
             nome: conteudo.categoria.nome,
           },
         }))
-        .sort((a: any, b: any) => {
-          // Ordenar por data de publicação, do mais recente para o mais antigo
-          return new Date(b.publicadoEm).getTime() - new Date(a.publicadoEm).getTime();
-        });
+        .sort((a, b) => new Date(b.publicadoEm).getTime() - new Date(a.publicadoEm).getTime());
 
-      const uniqueConteudos = Array.from(
-        new Set(conteudos.map((conteudo: any) => conteudo.id))
-      ).map((id) => conteudos.find((conteudo: any) => conteudo.id === id)!);
-
-      setConteudos(uniqueConteudos);
+      setConteudosUnicos(conteudosUnicos);
+      setConteudos(conteudosUnicos); // Usar a versão única e ordenada
     } catch (error) {
       setError("Houve um erro ao buscar os conteúdos. Tente novamente mais tarde.");
       console.error("Erro ao buscar os conteúdos:", error);

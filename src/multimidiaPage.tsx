@@ -69,7 +69,7 @@ export default function MultimediaPage() {
                 ))}
             </div>
 
-          
+
             {hasMore && (
                 <div className="flex justify-center mt-6">
                     <button
