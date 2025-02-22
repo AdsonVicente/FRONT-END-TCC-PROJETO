@@ -61,7 +61,7 @@ import Missoes from "./pages/Home/Componentes/missoes";
 import Doacao from "./pages/Doacao/doacao";
 
 
-AOS.init();
+AOS.init(); 
 
 const App = () => {
   const [isConteudosModalOpen, setIsConteudosModalOpen] = useState(false);
