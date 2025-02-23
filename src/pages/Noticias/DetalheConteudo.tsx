@@ -46,11 +46,17 @@ const DetalheConteudo: React.FC = () => {
     );
   }
 
-  const formattedDate = format(
-    new Date(conteudo.publicadoEm),
-    "dd 'de' MMMM 'de' yyyy",
-    { locale: ptBR }
-  );
+  const formattedDate = conteudo.publicadoEm
+  ? (() => {
+      const parsedDate = new Date(conteudo.publicadoEm);
+      if (isNaN(parsedDate.getTime())) {
+        console.error("Data inválida:", conteudo.publicadoEm);
+        return "Data inválida";
+      }
+      return format(parsedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+    })()
+  : "Data não disponível";
+
 
   const shareUrl = window.location.href;
   const shareText = `Confira este artigo: ${conteudo.titulo}`;

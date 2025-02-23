@@ -58,25 +58,33 @@ const Formacao: React.FC = () => {
     setLoading(true);
     try {
       const [categoriesResponse, conteudosResponse] = await Promise.all([
-        api.get<Categoria[]>("/categorias"),
-        api.get<Conteudo[]>("/conteudos"),
+        api.get("/categorias"),
+        api.get("/conteudos"),
       ]);
 
-      // Filtrando categorias permitidas antes de definir no estado
-      const filteredCategories = categoriesResponse.data.filter((categoria) =>
-        allowedCategories.includes(categoria.nome.toLowerCase())
+      console.log("Categorias API Response:", categoriesResponse.data);
+      console.log("Conteúdos API Response:", conteudosResponse.data);
+
+      // Garantindo que a resposta seja um array antes de filtrar
+      const categoriasData = Array.isArray(categoriesResponse.data) ? categoriesResponse.data : [];
+      const conteudosData = Array.isArray(conteudosResponse.data) ? conteudosResponse.data : [];
+
+      // Filtrando categorias permitidas
+      const filteredCategories = categoriasData.filter((categoria) =>
+        categoria?.nome && allowedCategories.includes(categoria.nome.toLowerCase())
       );
 
       setCategorias([{ id: "all", nome: "Todos" }, ...filteredCategories]);
 
-      // Filtrando os conteúdos com base nas categorias permitidas
-      const filteredConteudos = conteudosResponse.data.filter((conteudo) =>
-        allowedCategories.includes(conteudo.categoria.nome.toLowerCase())
+      // Filtrando conteúdos com base nas categorias permitidas
+      const filteredConteudos = conteudosData.filter((conteudo) =>
+        conteudo?.categoria?.nome && allowedCategories.includes(conteudo.categoria.nome.toLowerCase())
       );
 
       setConteudos(filteredConteudos);
       setFilteredData(filteredConteudos);
     } catch (error) {
+      console.error("Erro ao buscar dados:", error);
       setError("Erro ao buscar dados");
     } finally {
       setLoading(false);

@@ -57,24 +57,31 @@ const Noticias: React.FC = () => {
     setLoading(true);
     try {
       const [categoriesResponse, conteudosResponse] = await Promise.all([
-        api.get<Categoria[]>("/categorias"),
-        api.get<Conteudo[]>("/conteudos"),
+        api.get("/categorias"),
+        api.get("/conteudos"),
       ]);
 
-      // Filtra as categorias permitidas antes de definir no estado
+      if (!Array.isArray(categoriesResponse.data)) {
+        throw new Error("Categorias não é um array.");
+      }
+      if (!Array.isArray(conteudosResponse.data)) {
+        throw new Error("Conteúdos não é um array.");
+      }
+
       const filteredCategories = categoriesResponse.data.filter((categoria) =>
         allowedCategories.includes(categoria.nome)
       );
 
       setCategorias([{ id: "all", nome: "Todos" }, ...filteredCategories]);
 
-      // Filtra os conteúdos com base nas categorias permitidas
-      setConteudos(conteudosResponse.data.filter((noticia) =>
-        allowedCategories.includes(noticia.categoria.nome)
-      ));
+      const filteredConteudos = conteudosResponse.data.filter((noticia) =>
+        allowedCategories.includes(noticia.categoria?.nome)
+      );
 
-      setFilteredData(conteudosResponse.data);
+      setConteudos(filteredConteudos);
+      setFilteredData(filteredConteudos);
     } catch (error) {
+      console.error("Erro ao buscar dados:", error);
       setError("Erro ao buscar dados");
     } finally {
       setLoading(false);
@@ -96,6 +103,7 @@ const Noticias: React.FC = () => {
     });
     setFilteredData(filtered);
   }, [searchQuery, selectedCategories, conteudos]);
+
 
   return (
     <div className="flex flex-col md:flex-row mx-auto py-6 lg:px-8">
