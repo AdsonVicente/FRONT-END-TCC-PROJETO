@@ -37,7 +37,7 @@ const categoryColors: { [key: string]: string } = {
 };
 
 const allowedCategories = [
-  "formacão", "espiritualidade", "igreja", "doutrina católica", "bíblia e sagrada escritura",
+  "formação", "espiritualidade", "igreja", "doutrina católica", "bíblia e sagrada escritura",
   "liturgia e sacramentos", "catequese", "santos e mártires", "história da igreja",
   "vida consagrada", "música e liturgia", "teologia", "juventude"
 ];
