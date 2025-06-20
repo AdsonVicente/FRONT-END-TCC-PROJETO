@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import DOMPurify from "isomorphic-dompurify";
-import { format, isBefore, isAfter, isToday } from "date-fns";
+import { format, isBefore, isAfter} from "date-fns";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -189,7 +189,7 @@ export default async function Page() {
     let eventos: Evento[] = [];
     try {
         eventos = await fetchEventos();
-    } catch (e) { }
+    } catch (e: unknown) { }
 
     const { futuros, passados } = separarEventos(eventos);
 

@@ -161,6 +161,8 @@ const Home = () => {
                   <div className="relative h-full w-full overflow-hidden shadow-lg group">
                     <Link href={`/conteudos/${destaqueConteudos[0].id}`}>
                       <Image
+                        width={600}      // ajuste para o tamanho real ou desejado
+                        height={400}
                         className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-300"
                         src={destaqueConteudos[0].banner}
                         alt={destaqueConteudos[0].titulo}
@@ -189,6 +191,8 @@ const Home = () => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           src={item.banner}
                           alt={item.titulo}
+                           width={600}      // ajuste para o tamanho real ou desejado
+  height={400}  
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent px-4 py-4 flex flex-col justify-end">
                           <h3
@@ -234,6 +238,8 @@ const Home = () => {
                 <Image
                   src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748476774/WhatsApp_Image_2025-05-16_at_14.20.59_yi907h.jpg"
                   className="w-32 mx-auto mb-4"
+                   width={600}      // ajuste para o tamanho real ou desejado
+  height={400}  
                   alt="Mascote Agapinho"
                 />
                 <h3 className="text-xl font-semibold mb-2">Setor Criança</h3>
@@ -286,6 +292,8 @@ const Home = () => {
                   <Image
                     alt={conteudoPrincipal.titulo}
                     src={conteudoPrincipal.banner}
+                     width={600}      // ajuste para o tamanho real ou desejado
+  height={400}  
                     className="h-64 w-full object-cover sm:h-80 lg:h-96 shadow-md"
                   />
                   <Link href={`/conteudos/${conteudoPrincipal.id}`}>
@@ -316,6 +324,8 @@ const Home = () => {
                         <Image
                           src={conteudo.banner}
                           alt={conteudo.titulo}
+                           width={600}      // ajuste para o tamanho real ou desejado
+  height={400}  
                           className="w-full h-48 object-cover"
                         />
                         <div className="mt-2">

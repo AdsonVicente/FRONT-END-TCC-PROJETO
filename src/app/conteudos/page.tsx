@@ -1,6 +1,21 @@
 import { Suspense } from "react";
 import FormacaoClient from "./FiltroNoticias";
 
+interface Category {
+  id?: string;      // pode ser undefined
+  nome?: string;    // pode ser undefined
+}
+
+interface ConteudoRaw {
+  id: string;
+  titulo: string;
+  descricao: string;
+  autor: string;
+  banner: string;
+  publicadoEm: string;
+  category?: Category;  // pode ser ausente
+}
+
 interface Categoria {
   id: string;
   nome: string;
@@ -13,11 +28,9 @@ interface Conteudo {
   autor: string;
   banner: string;
   publicadoEm: string;
-  categoria: {
-    id: string;
-    nome: string;
-  };
+  categoria: Categoria;
 }
+
 
 const categoriasPermitidas: Categoria[] = [
   { id: "b05a7baa-3ab0-464c-85ca-eab1e81d594c", nome: "Missões e Visitas" },
@@ -47,7 +60,7 @@ async function getConteudos(): Promise<Conteudo[]> {
     const data = await res.json();
 
     return (Array.isArray(data) ? data : [])
-      .map((conteudo: any) => ({
+      .map((conteudo: ConteudoRaw) => ({
         id: conteudo.id,
         titulo: conteudo.titulo,
         descricao: conteudo.descricao,

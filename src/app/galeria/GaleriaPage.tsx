@@ -28,13 +28,14 @@ export default function GaleriaPage() {
 
                 const agrupado = imagens.reduce((acc: GaleriaPorCategoria[], imagem: ImagemGaleria) => {
                     const cat = imagem.categoria ?? 'Sem Categoria';
-                    let grupo = acc.find(g => g.categoria === cat);
+                    const grupo = acc.find(g => g.categoria === cat);
 
                     if (grupo) {
                         grupo.imagens.push(imagem);
                     } else {
                         acc.push({ categoria: cat, imagens: [imagem] });
                     }
+
 
                     return acc;
                 }, []);

@@ -7,6 +7,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import Image from "next/image";
 
 const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
@@ -55,7 +56,9 @@ const PregacaoSection: React.FC<PregacaoSectionProps> = ({
 
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16 mb-10">
           {coverImage && (
-            <img
+            <Image
+              width={600}      // ajuste para o tamanho real ou desejado
+              height={400}
               src={coverImage}
               alt="Imagem do fundador"
               className="w-40 h-40 md:w-52 md:h-52 object-cover rounded-full border-4 border-yellow-400 shadow"

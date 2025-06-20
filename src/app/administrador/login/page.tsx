@@ -43,7 +43,7 @@ export default function Login() {
                 toast.success(`Bem-vindo, ${admin.nome}!`);
                 try {
                     await api.get(`/administradorDetalhes?id=${admin.id}`);
-                } catch (error) {
+                } catch (error:unknown) {
                     // Detalhes do admin são opcionais
                 }
                 router.push("/administrador/dashboard");

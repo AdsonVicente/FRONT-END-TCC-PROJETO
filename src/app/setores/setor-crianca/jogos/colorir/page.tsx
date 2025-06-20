@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type Atividade = {
     titulo: string;
@@ -89,7 +90,7 @@ const AgapinhoMascote = () => {
             transition={{ repeat: Infinity, duration: 2 }}
             onClick={mostrarFala}
         >
-            <img
+            <Image
                 src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1746490573/agapinho_al2g4t.png"
                 alt="Agapinho"
                 className="w-32 drop-shadow-xl hover:scale-105 transition-transform"
@@ -177,7 +178,7 @@ export default function SetorCriancaPage() {
                             className="bg-white rounded-3xl shadow-xl overflow-hidden transform transition hover:scale-105"
                             whileHover={{ scale: 1.05, boxShadow: "0 8px 32px #f472b6" }}
                         >
-                            <img
+                            <Image
                                 src={atividade.imagem}
                                 alt={`Imagem da atividade: ${atividade.titulo}`}
                                 className="w-full h-48 object-cover"

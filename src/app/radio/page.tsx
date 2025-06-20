@@ -62,17 +62,6 @@ export default function RadioPage({
     ? searchParams.dia
     : getTodayDayName();
 
-  const programacaoSelecionada = programacao.find((p) => p.dia === selectedDay);
-
-  // Função para atualizar o dia na URL (sem usar useState)
-  function handleSelectDay(dia: string) {
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      url.searchParams.set("dia", dia);
-      window.location.href = url.toString();
-    }
-  }
-
   // Dummy data for aside iframes (since src and title are referenced)
   const asideIframes = [
     {

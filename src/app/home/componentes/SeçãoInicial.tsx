@@ -42,9 +42,13 @@ const BemVindo: React.FC = () => {
         <div className="lg:w-1/2 flex justify-center relative">
           <div className="rounded-xl overflow-hidden animate-float">
             <Image
+
               src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1745150137/oe2poj9xtudbt4dumeir.png"
               alt="Ilustração Comunidade Ágape"
+              width={600}      // ajuste para o tamanho real ou desejado
+              height={400}
               className="w-full max-w-md object-cover"
+
             />
           </div>
         </div>
