@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { api } from "@/app/services/api";
 
-import { EditorContent, useEditor } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
@@ -18,13 +18,10 @@ import Blockquote from "@tiptap/extension-blockquote";
 import Heading from "@tiptap/extension-heading";
 import * as jwt_decode from "jwt-decode";
 import TiptapEditor from "@/app/componentes/TiptapEditor";
-
+import Images from "next/image";
 interface Categoria {
   id: string;
   nome: string;
-}
-interface TokenPayload {
-  sub: string; // ou o campo que contém o id do administrador no token
 }
 
 export default function PublicarConteudo() {
@@ -77,7 +74,7 @@ export default function PublicarConteudo() {
 
         const response = await api.get(`/administrador/${adminId}`);
         setAutor(response.data.nome);
-      } catch (error) {
+      } catch (error: unknown) {
         toast.error("Erro ao buscar dados do administrador.");
       }
     };
@@ -240,7 +237,7 @@ export default function PublicarConteudo() {
             {bannerPreview && (
               <div className="mt-4">
                 {banner?.type.startsWith("image/") ? (
-                  <img
+                  <Images
                     src={bannerPreview}
                     alt="Preview"
                     className="max-w-full rounded-md"

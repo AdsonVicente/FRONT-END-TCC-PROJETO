@@ -15,7 +15,18 @@ interface NewsType {
   category: string;
   date: string;
 }
+interface Categoria {
+  id: string;
+  nome: string;
+}
 
+interface Conteudo {
+  id: string;
+  titulo: string;
+  banner: string;
+  publicadoEm: string;
+  category?: Categoria | null;
+}
 export default function Sidebar() {
   const [news, setNews] = useState<NewsType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,11 +38,10 @@ export default function Sidebar() {
         const response = await api.get(`/conteudos`);
 
         const categoriasPermitidas = ['6a87d133-94c4-4eb7-aaac-489f0eafc0eb'];
-
         const filteredNews = response.data
-          .filter((conteudo: any) => categoriasPermitidas.includes(conteudo.category?.id))
+          .filter((conteudo: Conteudo) => categoriasPermitidas.includes(conteudo.category?.id ?? ''))
           .slice(0, 6)
-          .map((conteudo: any) => ({
+          .map((conteudo: Conteudo) => ({
             id: conteudo.id,
             title: conteudo.titulo,
             imageUrl: conteudo.banner,
@@ -43,6 +53,7 @@ export default function Sidebar() {
               year: 'numeric',
             }),
           }));
+
 
         setNews(filteredNews);
       } catch (error) {

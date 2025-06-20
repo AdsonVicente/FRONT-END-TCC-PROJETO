@@ -1,6 +1,7 @@
 // app/login/page.tsx
 
 "use client";
+import { AxiosError } from "axios";
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -50,15 +51,19 @@ export default function Login() {
                 setError("senha", { message: "Email ou senha inválidos." });
                 toast.error("Email ou senha inválidos.");
             }
-        } catch (error: any) {
-            const message =
-                error?.response?.data?.message ||
-                "Erro ao tentar logar. Tente novamente.";
-            setError("senha", { message });
-            toast.error(message);
-        } finally {
-            setLoading(false);
+        } catch (error: unknown) {
+            if (error instanceof AxiosError) {
+                const message =
+                    (error.response?.data as { message?: string })?.message ||
+                    "Erro ao tentar logar. Tente novamente.";
+                setError("senha", { message });
+                toast.error(message);
+            } else {
+                toast.error("Erro inesperado. Tente novamente.");
+            }
         }
+
+
     };
 
     return (

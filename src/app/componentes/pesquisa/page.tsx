@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import DOMPurify from "dompurify";
 import { api } from "../../services/api";
 import ContentCard from "./card/Card";
 import FilterSection from "./filtro/Filtro";
+
 interface Conteudo {
   id: number;
   titulo: string;
@@ -38,11 +38,7 @@ export default function SearchPage() {
   const [showCategories, setShowCategories] = useState(false);
   const [showAuthors, setShowAuthors] = useState(false);
 
-  useEffect(() => {
-    fetchContents();
-  }, [queryParam, selectedCategory, selectedAuthor]);
-
-  const fetchContents = async () => {
+  const fetchContents = useCallback(async () => {
     setLoading(true);
     try {
       const response = await api.get("/conteudos");
@@ -68,15 +64,22 @@ export default function SearchPage() {
       setCategories(
         Array.from(new Set(data.map((i) => i.category?.nome || "Sem categoria")))
       );
-      setAuthors(Array.from(new Set(data.map((i) => i.autor || "Desconhecido"))));
+      setAuthors(
+        Array.from(new Set(data.map((i) => i.autor || "Desconhecido")))
+      );
 
       setError(filtered.length === 0 ? "Nenhum conteúdo encontrado." : null);
-    } catch (error) {
+    } catch (err) {
+      console.error("Erro ao buscar conteúdos:", err);
       setError("Erro ao buscar conteúdos.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [queryParam, selectedCategory, selectedAuthor]);
+
+  useEffect(() => {
+    fetchContents();
+  }, [fetchContents]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

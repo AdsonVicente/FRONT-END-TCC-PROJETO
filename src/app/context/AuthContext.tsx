@@ -2,25 +2,35 @@ import { createContext, useEffect, useState, ReactNode } from "react";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+interface User {
+  id: string;
+  nome: string;
+  email: string;
+  // adicione os campos necessários
+}
+
 interface AuthContextProps {
-  user: any;
-  setUser: (user: any) => void;
+  user: User | null;
+  setUser: (user: User | null) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  setUser: () => {},
+  setUser: () => {},  
   logout: () => {},
   isAuthenticated: false,
 });
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  // Função de logout que remove o token e reseta o estado do usuário
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
@@ -28,14 +38,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast.info('Você foi desconectado.');
   };
 
-  // Verifica o token no localStorage na inicialização do componente
   useEffect(() => {
     const token = localStorage.getItem('token');
 
     if (token) {
       try {
-        // Decodifica o token e seta o usuário autenticado
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        // Decodifica o payload do token JWT (base64)
+        const base64Payload = token.split('.')[1];
+        const jsonPayload = atob(base64Payload);
+        const decodedToken = JSON.parse(jsonPayload) as User;
+
         setUser(decodedToken);
         setIsAuthenticated(true);
       } catch (error) {

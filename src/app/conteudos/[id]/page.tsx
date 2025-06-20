@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import { notFound } from "next/navigation";
 import { api } from "../../services/api"; // ajuste o caminho conforme seu projeto
 import BackButton from "@/app/componentes/BackButton";
 import { Metadata } from "next";
+import Image from "next/image";
 
 interface Noticia {
     id: string;
@@ -200,7 +200,7 @@ export default async function DetalheConteudo({ params }: PageProps) {
             />
 
             <div className="flex justify-center mb-8">
-                <img
+                <Image
                     src={imageUrl}
                     alt={`Imagem ilustrativa da notícia: ${stripHtmlTags(noticia.titulo)}`}
                     className="w-full h-auto object-cover rounded-lg shadow-md"

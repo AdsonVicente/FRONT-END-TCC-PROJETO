@@ -4,6 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import Head from "next/head";
 import { api } from "../../services/api";
 import { FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import Image from "next/image";
 
 interface Evento {
     id: string;
@@ -111,7 +112,7 @@ const DetalheEvento: React.FC = () => {
                 </h1>
 
                 <div className="flex justify-center mb-8">
-                    <img
+                    <Image
                         src={evento.banner}
                         alt={evento.titulo}
                         className="w-full h-auto object-cover rounded-lg shadow-md"

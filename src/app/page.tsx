@@ -1,8 +1,9 @@
 // /src/app/Pages/Home/PaginaPrincipal.tsx (adaptado para Next.js)
 
 "use client";
+import Image from "next/image";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Sidebar from "./home/componentes/sidebar";
 import MusicasSecao from "./home/componentes/musicas";
@@ -29,6 +30,19 @@ interface Conteudo {
   publicadoEm: string;
   categoria: Categoria;
 }
+interface ConteudoAPI {
+  id: string;
+  titulo: string;
+  descricao: string;
+  autor: string;
+  banner: string;
+  publicadoEm: string;
+  category?: {
+    id: string;
+    nome: string;
+  }
+}
+
 
 const fetchConteudos = async (): Promise<Conteudo[]> => {
   const res = await fetch(
@@ -38,11 +52,11 @@ const fetchConteudos = async (): Promise<Conteudo[]> => {
     }
   );
   if (!res.ok) throw new Error("Erro ao buscar os conteúdos.");
-  const data = await res.json();
+  const data: ConteudoAPI[] = await res.json();
 
   // Remover duplicados por ID
   const uniqueMap = new Map<string, Conteudo>();
-  data.forEach((c: any) => {
+  data.forEach((c) => {
     if (!uniqueMap.has(c.id)) {
       uniqueMap.set(c.id, {
         id: c.id,
@@ -52,14 +66,15 @@ const fetchConteudos = async (): Promise<Conteudo[]> => {
         banner: c.banner,
         publicadoEm: c.publicadoEm,
         categoria: {
-          id: c.category?.id,
-          nome: c.category?.nome,
+          id: c.category?.id ?? '',
+          nome: c.category?.nome ?? '',
         },
       });
     }
   });
   return Array.from(uniqueMap.values());
 };
+
 
 function stringToColor(str: string): string {
   let hash = 0;
@@ -145,7 +160,7 @@ const Home = () => {
                 <div className="w-full lg:w-1/2">
                   <div className="relative h-full w-full overflow-hidden shadow-lg group">
                     <Link href={`/conteudos/${destaqueConteudos[0].id}`}>
-                      <img
+                      <Image
                         className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-300"
                         src={destaqueConteudos[0].banner}
                         alt={destaqueConteudos[0].titulo}
@@ -170,7 +185,7 @@ const Home = () => {
                   {destaqueConteudos.slice(1).map((item) => (
                     <div key={item.id} className="relative h-48 shadow-lg overflow-hidden group">
                       <Link href={`/conteudos/${item.id}`}>
-                        <img
+                        <Image
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           src={item.banner}
                           alt={item.titulo}
@@ -216,7 +231,7 @@ const Home = () => {
 
               </div>
               <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-yellow-300 transition-transform transform hover:scale-105">
-                <img
+                <Image
                   src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748476774/WhatsApp_Image_2025-05-16_at_14.20.59_yi907h.jpg"
                   className="w-32 mx-auto mb-4"
                   alt="Mascote Agapinho"
@@ -268,7 +283,7 @@ const Home = () => {
             <section className="mt-6 lg:mt-24">
               {conteudoPrincipal && (
                 <div className="block mb-8">
-                  <img
+                  <Image
                     alt={conteudoPrincipal.titulo}
                     src={conteudoPrincipal.banner}
                     className="h-64 w-full object-cover sm:h-80 lg:h-96 shadow-md"
@@ -298,7 +313,7 @@ const Home = () => {
                   {remainingConteudos.slice(0, newsLimit).map((conteudo) => (
                     <div key={conteudo.id} className="lg:block bg-white overflow-hidden">
                       <Link href={`/conteudos/${conteudo.id}`}>
-                        <img
+                        <Image
                           src={conteudo.banner}
                           alt={conteudo.titulo}
                           className="w-full h-48 object-cover"

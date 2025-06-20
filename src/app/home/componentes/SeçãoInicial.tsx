@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa";
+import Image from "next/image";
 
 const BemVindo: React.FC = () => {
   return (
@@ -40,7 +41,7 @@ const BemVindo: React.FC = () => {
         {/* Ilustração */}
         <div className="lg:w-1/2 flex justify-center relative">
           <div className="rounded-xl overflow-hidden animate-float">
-            <img
+            <Image
               src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1745150137/oe2poj9xtudbt4dumeir.png"
               alt="Ilustração Comunidade Ágape"
               className="w-full max-w-md object-cover"

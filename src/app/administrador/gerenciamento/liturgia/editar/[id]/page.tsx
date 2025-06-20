@@ -40,7 +40,7 @@ export default function EditarLiturgia() {
         setSegundaLeitura(liturgia.segundaLeitura || "");
         setSalmoResponsorial(liturgia.salmoResponsorial || "");
         setEvangelho(liturgia.evangelho || "");
-      } catch (error) {
+      } catch (error: unknown) {
         toast.error("Erro ao carregar a liturgia para edição.");
       } finally {
         setIsFetching(false);

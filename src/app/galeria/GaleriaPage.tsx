@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '../services/api';
+import Image from 'next/image';
 
 interface ImagemGaleria {
     id: number;
@@ -22,12 +23,12 @@ export default function GaleriaPage() {
 
     useEffect(() => {
         api.get<ImagemGaleria[]>('/galeria')
-            .then((res: any) => {
+            .then((res) => {
                 const imagens = res.data;
 
-                const agrupado = imagens.reduce((acc: any, imagem: any) => {
-                    const cat = imagem.categoria || 'Sem Categoria';
-                    const grupo = acc.find((g: GaleriaPorCategoria) => g.categoria === cat);
+                const agrupado = imagens.reduce((acc: GaleriaPorCategoria[], imagem: ImagemGaleria) => {
+                    const cat = imagem.categoria ?? 'Sem Categoria';
+                    let grupo = acc.find(g => g.categoria === cat);
 
                     if (grupo) {
                         grupo.imagens.push(imagem);
@@ -36,8 +37,7 @@ export default function GaleriaPage() {
                     }
 
                     return acc;
-                }, [] as GaleriaPorCategoria[]);
-
+                }, []);
 
                 setGaleria(agrupado);
             })
@@ -48,6 +48,7 @@ export default function GaleriaPage() {
                 setLoading(false);
             });
     }, []);
+
 
     const handleToggleCategoria = (categoria: string) => {
         setCategoriaAberta((prev) => (prev === categoria ? null : categoria));
@@ -80,7 +81,7 @@ export default function GaleriaPage() {
                                 : 'shadow-md'
                                 } bg-white`}
                         >
-                            <img
+                            <Image
                                 src={imagemCapa?.imagemUrl}
                                 alt={`Capa da categoria ${categoria}`}
                                 className="w-full h-40 object-cover"
@@ -107,7 +108,7 @@ export default function GaleriaPage() {
                                     key={id}
                                     className="rounded-lg overflow-hidden shadow-sm bg-white flex flex-col"
                                 >
-                                    <img
+                                    <Image
                                         src={imagemUrl}
                                         alt={titulo}
                                         className="w-full h-36 object-cover"

@@ -4,7 +4,7 @@ import { useEffect, useCallback } from "react";
 import Head from "next/head";
 import { api } from "../services/api";
 import { FaCalendarAlt, FaFacebook, FaTwitter, FaWhatsapp } from "react-icons/fa";
-import { useRef, useReducer } from "react";
+import { useReducer } from "react";
 
 interface Liturgia {
   id: string;
@@ -143,7 +143,7 @@ export default function LiturgiaDiaria() {
       const formattedDate = date.toISOString().split("T")[0];
       const response = await api.get<Liturgia>(`/liturgia-dia?data=${formattedDate}`);
       setSelectedLiturgia(response.data);
-    } catch (error) {
+    } catch {
       setSelectedLiturgia(null);
     } finally {
       setIsLoading(false);

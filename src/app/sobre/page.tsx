@@ -19,8 +19,11 @@ type SinalCardProps = {
   img: string;
 };
 
-function SinalCard({ title, color, img}: SinalCardProps) {
+function SinalCard({ title, color, img }: SinalCardProps) {
   const [imgError, setImgError] = React.useState(false);
+  const Swiper = dynamic(() => import("swiper/react").then(mod => mod.Swiper), { ssr: false });
+  const SwiperSlide = dynamic(() => import("swiper/react").then(mod => mod.SwiperSlide), { ssr: false });
+
   return (
     <motion.div
       className="bg-white   p-6 flex flex-col items-center text-center  transition"
@@ -46,7 +49,7 @@ function SinalCard({ title, color, img}: SinalCardProps) {
       </div>
       <h3 className="text-lg font-bold mb-2" style={{ color }}>
         {title}
-      </h3>     
+      </h3>
     </motion.div>
   );
 }
@@ -55,19 +58,19 @@ const sinais = [
     title: "Cordão Branco",
     color: "red",
     img: "/cordão-branco.jpeg",
-   
+
   },
   {
     title: "Cordão Bege",
     color: "coral",
     img: "/cordão-bege.jpeg",
-    
+
   },
   {
     title: "A Corrente",
     color: "blue",
     img: "/cordão-prata.jpeg",
-    
+
   },
 ];
 export default function Historia() {

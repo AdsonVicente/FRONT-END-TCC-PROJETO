@@ -39,7 +39,7 @@ const GerenciarLiturgia: React.FC = () => {
     fetchLiturgias();
   }, [fetchLiturgias]);
 
-  const aplicarFiltros = () => {
+  const aplicarFiltros = useCallback(() => {
     let liturgiasFiltradas = liturgias;
 
     if (dataFiltro) {
@@ -53,7 +53,12 @@ const GerenciarLiturgia: React.FC = () => {
 
     setFilteredLiturgias(liturgiasFiltradas);
     setCurrentPage(1);
-  };
+  }, [liturgias, dataFiltro]); // <- 🔥 dependências necessárias
+
+  // useEffect correto
+  useEffect(() => {
+    aplicarFiltros();
+  }, [aplicarFiltros]); // 🔥 Sem warnings
 
   useEffect(() => {
     aplicarFiltros();

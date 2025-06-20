@@ -120,7 +120,7 @@ export default function GerenciarEventos() {
       await api.delete(`/eventos/${selectedEventId}`);
       toast.success("Evento excluído com sucesso!");
       fetchEvents();
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error("Erro ao excluir o evento.");
     } finally {
       setShowModal(false);
@@ -142,7 +142,7 @@ export default function GerenciarEventos() {
       });
       setInscritosDoEvento(response.data);
       setShowInscritosModal(true);
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error("Erro ao buscar inscritos.");
     }
   };

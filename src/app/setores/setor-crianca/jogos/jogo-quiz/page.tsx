@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import Head from "next/head";
+import Image from "next/image";
 
 const quiz = [
   {
@@ -254,7 +255,7 @@ export default function AgapinhoQuiz() {
           <p className="text-lg text-pink-800 mb-4">
             Você acertou <strong>{score}</strong> de <strong>{quiz.length}</strong> perguntas!
           </p>
-          <img
+          <Image
             src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1746490573/agapinho_al2g4t.png"
             alt="Agapinho feliz"
             className="w-32 mx-auto mb-4 animate-bounce"

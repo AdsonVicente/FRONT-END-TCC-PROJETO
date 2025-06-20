@@ -6,8 +6,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { api } from "../../../../services/api";
 
-// Exemplo:
-const response = await api.get("/alguma-rota");
 
 const CadastrarAdministrador = () => {
   const [nome, setNome] = useState('');

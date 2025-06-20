@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { api } from "@/app/services/api";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import TextAlign from "@tiptap/extension-text-align";
 import Image from "@tiptap/extension-image";
 import TiptapEditor from "@/app/componentes/TiptapEditor";
-
+import Images from "next/image";
 
 interface Evento {
   id: string;
@@ -192,7 +192,7 @@ export default function EditarEvento() {
           <div>
             <label className="block mb-1">Banner Atual</label>
             {evento.banner && (
-              <img
+              <Images
                 src={evento.banner}
                 alt="Banner atual"
                 className="w-full rounded-md mb-2"

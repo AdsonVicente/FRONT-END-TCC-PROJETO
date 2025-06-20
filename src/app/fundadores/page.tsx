@@ -78,10 +78,11 @@ const Fundadores: React.FC = () => (
                     "Ivone e Cleverson vieram residir em Tobias Barreto – SE, local, este que inquietava os corações dos Fundadores, pela falta de jovens no meio Católico.",
                     "Ivone, é admirada por seu olhar materno e sereno,  oferecendo um apoio constante e amoroso à nosso missão.",
                     "Maria Ivone foi, desde os primeiros passos desta obra, instrumento escolhido por Deus para que nossa comunidade nascesse, crescesse e se firmasse como um sinal vivo do amor de Cristo.",
-                    "Com seu \"sim\" corajoso, inspirou e continua a inspirar muitos irmãos e irmãs na vivência do carisma Ágape, que é, acima de tudo, o amor que se doa sem reservas. Sua caminhada é marcada por uma espiritualidade profunda, dedicação incansável à evangelização e um amor singular pelos que buscam um encontro verdadeiro com Deus.",
+                    "Com seu 'sim' corajoso, inspirou e continua a inspirar muitos irmãos e irmãs na vivência do carisma Ágape, que é, acima de tudo, o amor que se doa sem reservas. Sua caminhada é marcada por uma espiritualidade profunda, dedicação incansável à evangelização e um amor singular pelos que buscam um encontro verdadeiro com Deus.",
                     "Maria Ivone não é apenas cofundadora, mas uma conselheira e amiga, que, com sua sabedoria, acolhe e orienta a todos com ternura e firmeza, sempre atenta à vontade de Deus e à moção do Espírito Santo.",
                     "Com seu exemplo de humildade, perseverança e zelo apostólico, inspira a todos nós a seguirmos firmes na missão, com a certeza de que Deus é fiel e conduz a Sua obra com mãos seguras."
                 ]}
+
             />
             {/* Citação */}
             <QuoteSection quote="O Ágape é a misericórdia de Deus em minha vida." author="Cleverson Silva Santos" />

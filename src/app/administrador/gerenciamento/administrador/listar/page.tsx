@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/app/services/api';
 import { toast } from 'react-toastify';
 import { FaTrash, FaPlus, FaEye } from 'react-icons/fa';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import ConteudosModal from '@/app/administrador/ConteudoModal';
+import { AxiosError } from 'axios';
+
 
 interface Admin {
   id: string;
@@ -49,13 +51,18 @@ export default function ListarAdministradoresPage() {
     try {
       const response = await api.get('/administradoresDetalhes');
       setAdmins(response.data);
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        toast.error('Sessão expirada. Faça login novamente.');
-        router.push('/login');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          toast.error('Sessão expirada. Faça login novamente.');
+          router.push('/login');
+        } else {
+          toast.error('Erro ao carregar administradores.');
+          console.error('Erro:', error.message);
+        }
       } else {
-        toast.error('Erro ao carregar administradores.');
-        console.error('Erro:', error);
+        toast.error('Erro desconhecido.');
+        console.error('Erro desconhecido:', error);
       }
     }
   }, [router]);

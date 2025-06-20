@@ -1,5 +1,6 @@
 // app/setormisto/page.tsx
 'use client';
+import Image from "next/image";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -131,9 +132,9 @@ export default function SetorMistoPage() {
             <section className="py-16 px-4 md:px-20">
                 <h2 className="text-3xl font-semibold text-red-600 mb-6">Galeria de Momentos</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <img src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748275336/WhatsApp_Image_2025-05-06_at_19.01.44_kwf8g6.jpg" className="rounded-lg shadow-md hover:scale-105 transition-transform" alt="Imagem 1" />
-                    <img src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748275512/WhatsApp_Image_2025-05-06_at_19.01.44_1_pww1eo.jpg" className="rounded-lg shadow-md hover:scale-105 transition-transform" alt="Imagem 2" />
-                    <img src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748275573/WhatsApp_Image_2025-05-26_at_13.04.44_cf70le.jpg" className="rounded-lg shadow-md hover:scale-105 transition-transform" alt="Imagem 3" />
+                    <Image src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748275336/WhatsApp_Image_2025-05-06_at_19.01.44_kwf8g6.jpg" className="rounded-lg shadow-md hover:scale-105 transition-transform" alt="Imagem 1" />
+                    <Image src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748275512/WhatsApp_Image_2025-05-06_at_19.01.44_1_pww1eo.jpg" className="rounded-lg shadow-md hover:scale-105 transition-transform" alt="Imagem 2" />
+                    <Image src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1748275573/WhatsApp_Image_2025-05-26_at_13.04.44_cf70le.jpg" className="rounded-lg shadow-md hover:scale-105 transition-transform" alt="Imagem 3" />
                 </div>
 
                 {/* Convite */}

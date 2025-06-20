@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { api } from '@/app/services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Image from 'next/image';
 
 export default function AdminGaleriaPage() {
   const [titulo, setTitulo] = useState('');
@@ -146,7 +147,7 @@ export default function AdminGaleriaPage() {
               <p className="font-medium mb-2">
                 Confira se esta é a imagem correta:
               </p>
-              <img
+              <Image
                 src={previewUrl}
                 alt="Prévia da imagem"
                 className="w-full max-h-64 object-contain border border-gray-300 rounded-md"

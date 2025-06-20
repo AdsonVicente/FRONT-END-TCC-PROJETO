@@ -49,7 +49,7 @@ const Dashboard = () => {
       setError(null);
       const response = await api.get('/estatisticas');
       setStatistics(response.data);
-    } catch (error) {
+    } catch (error: unknown) {
       setError('Erro ao buscar estatísticas. Tente novamente mais tarde.');
     }
   }, []);

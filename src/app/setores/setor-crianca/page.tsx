@@ -88,7 +88,7 @@ const SetorCrianca = () => {
             animate={{ y: [0, -10, 0] }}
             transition={{ repeat: Infinity, duration: 2 }}
         >
-            <img
+            <Image
                 onClick={() => setFala(true)}
                 src="https://res.cloudinary.com/dd7vxtdc0/image/upload/v1746490573/agapinho_al2g4t.png"
                 alt="Agapinho"
@@ -206,7 +206,7 @@ const SetorCrianca = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {imagens.map((src, index) =>
                             src.startsWith("http") ? (
-                                <img
+                                <Image
                                     key={index}
                                     src={src}
                                     alt={`Imagem ${index + 1}`}
@@ -238,7 +238,7 @@ const SetorCrianca = () => {
                             role="dialog"
                             aria-modal="true"
                         >
-                            <img
+                            <Image
                                 src={selectedImage}
                                 alt="Imagem ampliada"
                                 className="max-w-4xl max-h-[90vh] rounded-lg shadow-lg"

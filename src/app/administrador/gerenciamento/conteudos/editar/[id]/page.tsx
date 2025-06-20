@@ -12,13 +12,14 @@ import Head from "next/head";
 
 import {
   useEditor,
-  EditorContent,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import TiptapEditor from "@/app/componentes/TiptapEditor";
+import Images from "next/image";
+import { AxiosError } from "axios";
 
 interface Categoria {
   id: string;
@@ -149,18 +150,22 @@ const EditarConteudo = () => {
 
       toast.success("Conteúdo atualizado com sucesso.");
       router.push("/gerenciarconteudo");
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        toast.error("Sessão expirada. Faça login novamente.");
-        localStorage.removeItem("token");
-        router.push("/login");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          toast.error("Sessão expirada. Faça login novamente.");
+          localStorage.removeItem("token");
+          router.push("/login");
+        } else {
+          toast.error("Erro ao atualizar o conteúdo.");
+          console.error(error);
+        }
       } else {
-        toast.error("Erro ao atualizar o conteúdo.");
-        console.error(error);
+        console.error("Erro desconhecido:", error);
+        toast.error("Erro inesperado.");
       }
-    } finally {
-      setIsLoading(false);
     }
+
   };
 
   return (
@@ -245,7 +250,7 @@ const EditarConteudo = () => {
                           src={bannerPreview}
                         />
                       ) : (
-                        <img
+                        <Images
                           src={bannerPreview}
                           alt={`Preview do banner`}
                           className="max-w-full rounded"

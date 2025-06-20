@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 interface Categoria {
@@ -43,7 +44,7 @@ const Card: React.FC<{ conteudo: Conteudo }> = ({ conteudo }) => {
         {/* Imagem */}
         <Link href={`/conteudos/${conteudo.id}`} passHref>
 
-          <img
+          <Image
             src={conteudo.banner}
             alt={conteudo.titulo}
             className="shadow-lg w-full max-w-full h-[200px] object-cover object-center md:min-h-[180px] md:max-h-[150px] md:min-w-[300px] md:max-w-[300px]"

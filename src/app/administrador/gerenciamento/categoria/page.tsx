@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../../services/api"; // Ajuste o path conforme sua estrutura
 import { toast } from "react-toastify";
 import { FaTrash } from "react-icons/fa";
+import { useCallback } from "react";
+import { AxiosError } from "axios";
 
 interface Categoria {
   id: number;
@@ -23,23 +25,31 @@ const CreateCategoryForm: React.FC = () => {
 
   const totalPages = Math.ceil(categorias.length / ITEMS_PER_PAGE);
 
-  const fetchCategorias = async () => {
+
+  const fetchCategorias = useCallback(async () => {
     if (isFetching) return;
     setIsFetching(true);
     try {
       const response = await api.get<Categoria[]>("/categorias");
       setCategorias(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar categorias:", error);
-      toast.error("Erro ao buscar categorias.");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        console.error("Erro ao buscar categorias:", error.message);
+        toast.error("Erro ao buscar categorias.");
+      } else {
+        console.error("Erro desconhecido:", error);
+        toast.error("Erro inesperado.");
+      }
     } finally {
       setIsFetching(false);
     }
-  };
+  }, [isFetching]);
+
 
   useEffect(() => {
     fetchCategorias();
-  }, []);
+  }, [fetchCategorias]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,11 +64,10 @@ const CreateCategoryForm: React.FC = () => {
       setNome("");
       fetchCategorias();
       setCurrentPage(1); // Voltar para a primeira página após inclusão
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Erro ao criar categoria:", error);
       toast.error(
-        "Erro ao criar categoria: " +
-        (error.response?.data?.message || "Tente novamente.")
+        "Erro ao criar categoria"
       );
     } finally {
       setIsSubmitting(false);
@@ -208,8 +217,8 @@ const CreateCategoryForm: React.FC = () => {
             onClick={handlePreviousPage}
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded ${currentPage === 1
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-100 hover:bg-gray-200"
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-100 hover:bg-gray-200"
               }`}
           >
             Anterior
@@ -220,8 +229,8 @@ const CreateCategoryForm: React.FC = () => {
               key={page}
               onClick={() => handlePageClick(page)}
               className={`px-4 py-2 rounded ${currentPage === page
-                  ? "bg-zinc-600 text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
+                ? "bg-zinc-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
                 }`}
             >
               {page}
@@ -232,8 +241,8 @@ const CreateCategoryForm: React.FC = () => {
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded ${currentPage === totalPages || totalPages === 0
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-gray-100 hover:bg-gray-200"
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-gray-100 hover:bg-gray-200"
               }`}
           >
             Próxima

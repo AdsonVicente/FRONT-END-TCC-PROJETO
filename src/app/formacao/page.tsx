@@ -5,6 +5,25 @@ interface Categoria {
   id: string;
   nome: string;
 }
+interface Category {
+  id?: string;      // pode ser undefined
+  nome?: string;    // pode ser undefined
+}
+
+interface ConteudoRaw {
+  id: string;
+  titulo: string;
+  descricao: string;
+  autor: string;
+  banner: string;
+  publicadoEm: string;
+  category?: Category;  // pode ser ausente
+}
+
+interface Categoria {
+  id: string;
+  nome: string;
+}
 
 interface Conteudo {
   id: string;
@@ -13,11 +32,9 @@ interface Conteudo {
   autor: string;
   banner: string;
   publicadoEm: string;
-  categoria: {
-    id: string;
-    nome: string;
-  };
+  categoria: Categoria;
 }
+
 
 const categoriasPermitidas: Categoria[] = [
   { id: "2e387869-219a-4eee-9926-2a9660349c4f", nome: "Categoria 1" },
@@ -45,7 +62,7 @@ async function getConteudos(): Promise<Conteudo[]> {
     const data = await res.json();
 
     return (Array.isArray(data) ? data : [])
-      .map((conteudo: any) => ({
+      .map((conteudo: ConteudoRaw): Conteudo => ({
         id: conteudo.id,
         titulo: conteudo.titulo,
         descricao: conteudo.descricao,
