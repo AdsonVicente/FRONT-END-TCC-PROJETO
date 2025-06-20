@@ -50,9 +50,11 @@ const Dashboard = () => {
       const response = await api.get('/estatisticas');
       setStatistics(response.data);
     } catch (error: unknown) {
+      console.error('Erro ao buscar estatísticas:', error);
       setError('Erro ao buscar estatísticas. Tente novamente mais tarde.');
     }
   }, []);
+  
 
   useEffect(() => {
     fetchStatistics();

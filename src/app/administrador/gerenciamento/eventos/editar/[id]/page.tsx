@@ -69,7 +69,7 @@ export default function EditarEvento() {
 
 
       } catch (error) {
-        console.error(error);
+        console.error('erro ao carregar evento ' + error)
         toast.error("Erro ao carregar evento.");
       }
     };

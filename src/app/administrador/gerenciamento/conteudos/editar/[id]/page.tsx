@@ -1,300 +1,242 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "next/navigation";
+import { useEffect, useState, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { FaPlus, FaEdit } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+import Link from 'next/link';
+import { toast } from 'react-toastify';
+import FilterForm from '../../filter';
+import DeleteButton from '../../deleteButton';
 
-import { api } from "@/app/services/api";
-
-import Head from "next/head";
-
-import {
-  useEditor,
-} from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
-import TiptapEditor from "@/app/componentes/TiptapEditor";
-import Images from "next/image";
-import { AxiosError } from "axios";
-
-interface Categoria {
+interface Conteudo {
   id: string;
-  nome: string;
+  titulo: string;
+  descricao: string;
+  autor: string;
+  banner: string;
+  publicadoEm: string;
+  categoria: {
+    id: string;
+    nome: string;
+  };
 }
 
-const EditarConteudo = () => {
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [categoria, setCategoria] = useState("");
-  const [titulo, setTitulo] = useState("");
-  const [autor, setAutor] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [banner, setBanner] = useState<File | null>(null);
-  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+export default function GerenciarConteudosPage() {
+  const [conteudos, setConteudos] = useState<Conteudo[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
-  const verificarAutenticacao = () => {
-    const token = localStorage.getItem("token");
+
+  const autorFiltro = searchParams.get('autor') || '';
+  const dataFiltro = searchParams.get('data') || '';
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const itemsPerPage = 10;
+
+  // ✅ Verificação de autenticação com useCallback (sem warnings)
+  const verificarAutenticacao = useCallback(() => {
+    const token = localStorage.getItem('token');
+
     if (!token) {
-      toast.error("Você precisa estar logado.");
-      router.push("/administardor/login");
+      toast.error('Você precisa estar logado.');
+      router.push('/administrador/login');
       return false;
     }
+
     return true;
-  };
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Link,
-      Image,
-    ],
-    content: descricao,
-    onUpdate: ({ editor }) => {
-      setDescricao(editor.getHTML());
-    },
-    editorProps: {
-      attributes: {
-        class: "min-h-[200px] border rounded-md p-3 focus:outline-none focus:ring focus:ring-blue-200",
-      },
-    },
-  });
+  }, [router]);
 
   useEffect(() => {
     if (!verificarAutenticacao()) return;
 
-    const fetchCategorias = async () => {
+    const fetchConteudos = async () => {
       try {
-        const response = await api.get("/categorias");
-        setCategorias(response.data);
-      } catch {
-        toast.error("Erro ao buscar categorias.");
-      }
-    };
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/conteudos`,
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+          }
+        );
 
-    fetchCategorias();
-  }, []);
-
-  useEffect(() => {
-    if (!verificarAutenticacao()) return;
-    if (!id) return;
-
-    const fetchConteudo = async () => {
-      setIsLoading(true);
-      try {
-        const response = await api.get(`/conteudos/${id}`);
-        const data = response.data;
-
-        setTitulo(data.titulo);
-        setAutor(data.autor);
-        setCategoria(data.categoria);
-        setBannerPreview(data.banner);
-        setDescricao(data.descricao || "");
-
-        editor?.commands.setContent(data.descricao || "");
-      } catch {
-        toast.error("Erro ao carregar o conteúdo.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchConteudo();
-  }, [id, editor]);
-
-  useEffect(() => {
-    return () => {
-      if (bannerPreview) URL.revokeObjectURL(bannerPreview);
-    };
-  }, [bannerPreview]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setBanner(file);
-      setBannerPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const updateConteudo = async () => {
-    if (!titulo.trim() || !autor.trim() || !categoria.trim()) {
-      toast.error("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    if (!verificarAutenticacao()) return;
-
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("titulo", titulo);
-      formData.append("descricao", descricao);
-      formData.append("autor", autor);
-      formData.append("categoria", categoria);
-      if (banner) formData.append("file", banner);
-
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Token não encontrado.");
-
-      await api.put(`/conteudos/${id}`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      toast.success("Conteúdo atualizado com sucesso.");
-      router.push("/gerenciarconteudo");
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        if (error.response?.status === 401) {
-          toast.error("Sessão expirada. Faça login novamente.");
-          localStorage.removeItem("token");
-          router.push("/login");
-        } else {
-          toast.error("Erro ao atualizar o conteúdo.");
-          console.error(error);
+        if (!res.ok) {
+          throw new Error('Erro ao buscar conteúdos');
         }
-      } else {
-        console.error("Erro desconhecido:", error);
-        toast.error("Erro inesperado.");
-      }
-    }
 
+        const data = await res.json();
+
+        const sorted = data.sort(
+          (a: Conteudo, b: Conteudo) =>
+            new Date(b.publicadoEm).getTime() -
+            new Date(a.publicadoEm).getTime()
+        );
+
+        setConteudos(sorted);
+      } catch (error) {
+        console.error(error);
+        toast.error('Erro ao carregar conteúdos.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConteudos();
+  }, [router, verificarAutenticacao]);
+
+  const conteudosFiltrados = conteudos
+    .filter((c) =>
+      autorFiltro ? c.autor.toLowerCase().includes(autorFiltro.toLowerCase()) : true
+    )
+    .filter((c) => (dataFiltro ? c.publicadoEm.startsWith(dataFiltro) : true));
+
+  const totalPages = Math.max(1, Math.ceil(conteudosFiltrados.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentConteudos = conteudosFiltrados.slice(startIndex, startIndex + itemsPerPage);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50 to-yellow-100 py-10 px-4 sm:px-6 lg:px-8 space-y-10">
+      <div className="max-w-5xl mx-auto bg-white/80 p-8 rounded-2xl shadow-lg border border-yellow-200">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <span className="text-yellow-500">🔎</span> Filtrar conteúdos
+        </h1>
+        <FilterForm autor={autorFiltro} data={dataFiltro} />
+      </div>
+
+      <div className="max-w-5xl mx-auto bg-white/90 p-8 rounded-2xl shadow-lg border border-yellow-200 overflow-x-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <span className="text-yellow-500">📚</span> Gerenciar Conteúdos
+          </h2>
+          <Link
+            href="/administrador/gerenciamento/conteudos/cadastrar"
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white py-2 px-5 rounded-lg text-base font-semibold shadow transition"
+          >
+            <FaPlus className="w-4 h-4" />
+            Adicionar
+          </Link>
+        </div>
+
+        {loading ? (
+          <p className="text-center py-10">Carregando...</p>
+        ) : (
+          <table className="w-full text-base border-separate border-spacing-y-2">
+            <thead>
+              <tr className="bg-yellow-50 text-gray-700">
+                <th className="text-left px-3 py-2">ID</th>
+                <th className="text-left px-3 py-2">Título</th>
+                <th className="text-left px-3 py-2">Autor</th>
+                <th className="text-left px-3 py-2">Data</th>
+                <th className="text-left px-3 py-2">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentConteudos.length ? (
+                currentConteudos.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="bg-white hover:bg-yellow-50 border rounded-lg shadow-sm transition"
+                  >
+                    <td className="px-3 py-2">{item.id}</td>
+                    <td className="px-3 py-2">
+                      <Link
+                        href={`/conteudos/${item.id}`}
+                        className="text-blue-600 hover:underline font-medium"
+                      >
+                        {item.titulo}
+                      </Link>
+                    </td>
+                    <td className="px-3 py-2">{item.autor}</td>
+                    <td className="px-3 py-2">
+                      {new Date(item.publicadoEm).toLocaleDateString()}
+                    </td>
+                    <td className="px-3 py-2 flex gap-3 text-blue-600">
+                      <Link
+                        href={`/conteudos/${item.id}`}
+                        title="Ver"
+                        className="hover:text-blue-800"
+                      >
+                        <FontAwesomeIcon icon={faEye} />
+                      </Link>
+                      <Link
+                        href={`/administrador/gerenciamento/conteudos/editar/${item.id}`}
+                        title="Editar"
+                        className="hover:text-blue-800"
+                      >
+                        <FaEdit />
+                      </Link>
+                      <DeleteButton id={item.id} />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center py-6 text-gray-500">
+                    Nenhum conteúdo encontrado.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+
+        <div className="flex justify-center items-center mt-8 space-x-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            autor={autorFiltro}
+            data={dataFiltro}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Pagination({
+  currentPage,
+  totalPages,
+  autor,
+  data,
+}: {
+  currentPage: number;
+  totalPages: number;
+  autor: string;
+  data: string;
+}) {
+  const getHref = (page: number) => {
+    const params = new URLSearchParams();
+    if (autor) params.set('autor', autor);
+    if (data) params.set('data', data);
+    params.set('page', page.toString());
+    return `?${params.toString()}`;
   };
 
   return (
     <>
-      <Head>
-        <title>Editar Conteúdo | Painel Administrativo</title>
-      </Head>
-
-      <div className="flex min-h-screen bg-gray-50">
-        <div className="flex-1 p-6">
-          <div className="bg-white p-6 rounded-lg max-w-4xl mx-auto shadow-lg">
-            <h2 className="text-3xl font-bold mb-6 text-stone-600">
-              Editar Conteúdo
-            </h2>
-
-            {isLoading ? (
-              <div className="flex justify-center items-center">
-                <div className="spinner-border animate-spin border-4 border-t-4 border-blue-500 rounded-full w-12 h-12" />
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  updateConteudo();
-                }}
-              >
-                <div className="mb-6">
-                  <label className="block text-lg font-medium mb-2">
-                    Título
-                  </label>
-                  <input
-                    type="text"
-                    value={titulo}
-                    onChange={(e) => setTitulo(e.target.value)}
-                    className="block w-full p-3 border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
-
-
-                <div className="mb-6">
-                  <label className="block text-lg font-medium mb-2">
-                    Descrição
-                  </label>
-                  <TiptapEditor
-                    value={descricao}
-                    onChange={setDescricao}
-                    placeholder="Digite a descrição aqui..."
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-lg font-medium mb-2">
-                    Autor
-                  </label>
-                  <input
-                    type="text"
-                    value={autor}
-                    onChange={(e) => setAutor(e.target.value)}
-                    className="block w-full p-3 border border-gray-300 rounded-lg"
-                    required
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-lg font-medium mb-2">
-                    Imagem ou Vídeo
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*,video/*"
-                    onChange={handleFileChange}
-                    className="block w-full p-3 border border-gray-300 rounded-lg"
-                  />
-                  {bannerPreview && (
-                    <div className="mt-4">
-                      {bannerPreview.endsWith(".mp4") ||
-                        bannerPreview.endsWith(".webm") ? (
-                        <video
-                          controls
-                          className="max-w-full rounded"
-                          src={bannerPreview}
-                        />
-                      ) : (
-                        <Images
-                          src={bannerPreview}
-                          alt={`Preview do banner`}
-                          className="max-w-full rounded"
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-lg font-medium mb-2">
-                    Categoria
-                  </label>
-                  <select
-                    value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                    className="block w-full p-3 border border-gray-300 rounded-lg"
-                    required
-                  >
-                    <option value="" disabled>
-                      Selecione uma categoria
-                    </option>
-                    {categorias.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  {isLoading ? "Atualizando..." : "Atualizar Conteúdo"}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      </div>
+      <Link
+        href={getHref(currentPage - 1)}
+        aria-disabled={currentPage === 1}
+        className={`px-4 py-2 rounded-lg transition font-semibold ${currentPage === 1
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+      >
+        Anterior
+      </Link>
+      <span className="text-base text-gray-700 font-medium">
+        {currentPage} / {totalPages}
+      </span>
+      <Link
+        href={getHref(currentPage + 1)}
+        aria-disabled={currentPage === totalPages}
+        className={`px-4 py-2 rounded-lg transition font-semibold ${currentPage === totalPages
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          : 'bg-blue-500 text-white hover:bg-blue-600'
+          }`}
+      >
+        Próxima
+      </Link>
     </>
   );
-};
-
-export default EditarConteudo;
+}

@@ -41,6 +41,7 @@ export default function EditarLiturgia() {
         setSalmoResponsorial(liturgia.salmoResponsorial || "");
         setEvangelho(liturgia.evangelho || "");
       } catch (error: unknown) {
+        console.error('erro ao carregar liturgia' + error)
         toast.error("Erro ao carregar a liturgia para edição.");
       } finally {
         setIsFetching(false);

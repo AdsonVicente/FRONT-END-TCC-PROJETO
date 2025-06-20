@@ -1,6 +1,4 @@
 "use client";
-
-import { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
@@ -120,7 +118,7 @@ export default function Historia() {
         </div>
 
 
-         <motion.div
+        <motion.div
           className="mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}

@@ -66,8 +66,8 @@ export default function GerenciarConteudosPage() {
 
         setConteudos(sorted);
       } catch (error) {
-        console.error(error);
-        toast.error('Erro ao carregar conteúdos.');
+        console.error('Erro ao cadastrar conteúdo:', error);
+        toast.error('Erro ao cadastrar conteúdo');
       } finally {
         setLoading(false);
       }
