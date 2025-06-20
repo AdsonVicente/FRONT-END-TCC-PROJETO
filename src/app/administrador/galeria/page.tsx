@@ -1,10 +1,11 @@
-// src/pages/admin-galeria.tsx
+'use client';
+
 import { useState, useEffect, FormEvent } from 'react';
 import { api } from '@/app/services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function AdminGaleria() {
+export default function AdminGaleriaPage() {
   const [titulo, setTitulo] = useState('');
   const [categoria, setCategoria] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -42,9 +43,7 @@ export default function AdminGaleria() {
       formData.append('categoria', categoria);
       formData.append('file', file);
 
-      await api.post('/galeria', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await api.post('/galeria', formData);
 
       toast.success('Imagem enviada com sucesso!');
       setTitulo('');
@@ -60,130 +59,117 @@ export default function AdminGaleria() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 500,
-        margin: '40px auto',
-        padding: 20,
-        border: '1px solid #ddd',
-        borderRadius: 8,
-      }}
-    >
-      <h1 style={{ textAlign: 'center', marginBottom: 20 }}>Gerenciar Galeria</h1>
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-center mb-6 text-blue-800">
+          Gerenciar Galeria
+        </h1>
 
-      <form onSubmit={handleSubmit}>
-        <label
-          htmlFor="titulo"
-          style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}
-        >
-          Título da imagem:
-        </label>
-        <input
-          id="titulo"
-          type="text"
-          placeholder="Digite o título da imagem"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          required
-          disabled={enviando}
-          style={{
-            width: '100%',
-            padding: 8,
-            marginBottom: 20,
-            borderRadius: 4,
-            border: '1px solid #ccc',
-            fontSize: 16,
-          }}
-        />
-
-        <label
-          htmlFor="categoria"
-          style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}
-        >
-          Categoria:
-        </label>
-        <select
-          id="categoria"
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          required
-          disabled={enviando}
-          style={{
-            width: '100%',
-            padding: 8,
-            marginBottom: 20,
-            borderRadius: 4,
-            border: '1px solid #ccc',
-            fontSize: 16,
-            cursor: 'pointer',
-          }}
-        >
-          <option value="" disabled>
-            Selecione a categoria
-          </option>
-          <option value="eventos">Eventos</option>
-          <option value="retreats">Retiros</option>
-          <option value="projetos">Projetos Sociais</option>
-          <option value="acampamentos">Acampamentos</option>
-          <option value="comunidade">Comunidade</option>
-          <option value="membros">Membros</option>
-          <option value="missas">Missas</option>
-          <option value="missoes">Missões</option>
-          <option value="setor-misto">Setor Misto</option>
-          <option value="setor-jovem">Setor Jovem</option>
-          <option value="setor-crianca">Setor Criança</option>
-          <option value="setor-familia">Setor Família</option>
-          <option value="outros">Outros</option>
-        </select>
-
-        <label
-          htmlFor="file"
-          style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}
-        >
-          Selecione uma imagem:
-        </label>
-        <input
-          id="file"
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          required
-          disabled={enviando}
-          style={{ marginBottom: 20 }}
-        />
-
-        {previewUrl && (
-          <div style={{ marginBottom: 20 }}>
-            <p style={{ fontWeight: 'bold' }}>
-              Confira se esta é a imagem correta antes de enviar:
-            </p>
-            <img
-              src={previewUrl}
-              alt="Prévia da imagem"
-              style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 6, border: '1px solid #ccc' }}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Título */}
+          <div>
+            <label
+              htmlFor="titulo"
+              className="block font-medium text-gray-700 mb-1"
+            >
+              Título da imagem:
+            </label>
+            <input
+              id="titulo"
+              type="text"
+              placeholder="Digite o título da imagem"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              required
+              disabled={enviando}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-        )}
 
-        <button
-          type="submit"
-          disabled={enviando}
-          style={{
-            width: '100%',
-            padding: 12,
-            backgroundColor: '#007bff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 16,
-            cursor: enviando ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {enviando ? 'Enviando...' : 'Enviar'}
-        </button>
-      </form>
+          {/* Categoria */}
+          <div>
+            <label
+              htmlFor="categoria"
+              className="block font-medium text-gray-700 mb-1"
+            >
+              Categoria:
+            </label>
+            <select
+              id="categoria"
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
+              required
+              disabled={enviando}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" disabled>
+                Selecione a categoria
+              </option>
+              <option value="eventos">Eventos</option>
+              <option value="retreats">Retiros</option>
+              <option value="projetos">Projetos Sociais</option>
+              <option value="acampamentos">Acampamentos</option>
+              <option value="comunidade">Comunidade</option>
+              <option value="membros">Membros</option>
+              <option value="missas">Missas</option>
+              <option value="missoes">Missões</option>
+              <option value="setor-misto">Setor Misto</option>
+              <option value="setor-jovem">Setor Jovem</option>
+              <option value="setor-crianca">Setor Criança</option>
+              <option value="setor-familia">Setor Família</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
 
-      <ToastContainer position="top-right" autoClose={3000} />
-    </div>
+          {/* Imagem */}
+          <div>
+            <label
+              htmlFor="file"
+              className="block font-medium text-gray-700 mb-1"
+            >
+              Selecione uma imagem:
+            </label>
+            <input
+              id="file"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              required
+              disabled={enviando}
+              className="w-full"
+            />
+          </div>
+
+          {/* Preview da imagem */}
+          {previewUrl && (
+            <div>
+              <p className="font-medium mb-2">
+                Confira se esta é a imagem correta:
+              </p>
+              <img
+                src={previewUrl}
+                alt="Prévia da imagem"
+                className="w-full max-h-64 object-contain border border-gray-300 rounded-md"
+              />
+            </div>
+          )}
+
+          {/* Botão */}
+          <button
+            type="submit"
+            disabled={enviando}
+            className={`w-full py-2 rounded-md text-white font-semibold transition ${
+              enviando
+                ? 'bg-blue-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {enviando ? 'Enviando...' : 'Enviar'}
+          </button>
+        </form>
+
+        <ToastContainer position="top-right" autoClose={3000} />
+      </div>
+    </main>
   );
 }
