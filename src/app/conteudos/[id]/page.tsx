@@ -32,10 +32,9 @@ function stripHtmlTags(html: string) {
 }
 
 interface PageProps {
-    params: {
-        id: string;
-    };
+    params: { id: string };
 }
+
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
     const { id } = params;
 
