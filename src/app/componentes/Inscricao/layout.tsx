@@ -2,7 +2,7 @@ import Navbar from "@/app/componentes/navbar/Navbar";
 import Footer from "@/app/componentes/footer/page";
 
 export const metadata = {
-    title: "Login | Comunidade Ágape",
+    title: "Inscrição | Comunidade Ágape",
     description: "Acesso restrito para administradores da Comunidade Católica Ágape.",
 };
 

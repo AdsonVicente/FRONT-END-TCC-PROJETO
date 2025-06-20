@@ -1,6 +1,6 @@
-// pages/admin-galeria.tsx
-import { useState, useEffect } from 'react';
-import { api } from '../services/api'; // ajuste o caminho conforme sua estrutura
+// src/pages/admin-galeria.tsx
+import { useState, useEffect, FormEvent } from 'react';
+import { api } from '@/app/services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,7 +22,7 @@ export default function AdminGaleria() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!file) {
@@ -35,12 +35,13 @@ export default function AdminGaleria() {
     }
 
     setEnviando(true);
-    const formData = new FormData();
-    formData.append('titulo', titulo);
-    formData.append('categoria', categoria);
-    formData.append('file', file);
 
     try {
+      const formData = new FormData();
+      formData.append('titulo', titulo);
+      formData.append('categoria', categoria);
+      formData.append('file', file);
+
       await api.post('/galeria', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -123,15 +124,15 @@ export default function AdminGaleria() {
           <option value="eventos">Eventos</option>
           <option value="retreats">Retiros</option>
           <option value="projetos">Projetos Sociais</option>
-          <option value="Acampamentos">Acampamentos</option>
-          <option value="Comunidade">Comunidade</option>
-          <option value="Membros">Membros</option>
-          <option value="Missas">Missas</option>
-          <option value="Missões">Missões</option>
-          <option value="Setor Misto">Setor Misto</option>
-          <option value="Setor Jovem">Setor Jovem</option>
-          <option value="Setor Criança">Setor Criança</option>
-          <option value="Setor Familia">Setor Familia</option>
+          <option value="acampamentos">Acampamentos</option>
+          <option value="comunidade">Comunidade</option>
+          <option value="membros">Membros</option>
+          <option value="missas">Missas</option>
+          <option value="missoes">Missões</option>
+          <option value="setor-misto">Setor Misto</option>
+          <option value="setor-jovem">Setor Jovem</option>
+          <option value="setor-crianca">Setor Criança</option>
+          <option value="setor-familia">Setor Família</option>
           <option value="outros">Outros</option>
         </select>
 

@@ -1,7 +1,7 @@
 import NavbarAdmin from "@/app/administrador/navbar-admin/NavbarAdmin";
 
 export const metadata = {
-  title: "Login | Comunidade Ágape",
+  title: "Gerenciar Administrador",
   description: "Acesso restrito para administradores da Comunidade Católica Ágape.",
 };
 
