@@ -1,0 +1,42 @@
+.ProseMirror {
+  min-height: 200px;
+  outline: none;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+
+.ProseMirror pre {
+  background: #0f172a;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.ProseMirror blockquote {
+  padding-left: 1rem;
+  border-left: 4px solid #e2e8f0;
+  color: #475569;
+}
+
+.ProseMirror table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+}
+.btn {
+  @apply px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.btn-active {
+  @apply px-2 py-1 rounded bg-blue-700 text-white;
+}
+

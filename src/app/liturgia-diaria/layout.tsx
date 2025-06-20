@@ -1,0 +1,21 @@
+import Navbar from "@/app/componentes/navbar/Navbar";
+import Footer from "@/app/componentes/footer/page";
+
+export const metadata = {
+    title: "Liturgia Diaria",
+    description: "Acesso restrito para administradores da Comunidade Católica Ágape.",
+};
+
+export default function Layout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <>
+            <Navbar />
+            {children}
+            <Footer />
+        </>
+    );
+}
