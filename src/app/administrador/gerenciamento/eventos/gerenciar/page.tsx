@@ -121,6 +121,8 @@ export default function GerenciarEventos() {
       toast.success("Evento excluído com sucesso!");
       fetchEvents();
     } catch (error: unknown) {
+      console.error('erro ao excluir evento ' + error)
+
       toast.error("Erro ao excluir o evento.");
     } finally {
       setShowModal(false);
@@ -143,6 +145,8 @@ export default function GerenciarEventos() {
       setInscritosDoEvento(response.data);
       setShowInscritosModal(true);
     } catch (error: unknown) {
+      console.error('erro ao buscar inscritos' + error)
+
       toast.error("Erro ao buscar inscritos.");
     }
   };

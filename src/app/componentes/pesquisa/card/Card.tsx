@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DOMPurify from "dompurify";
+import Image from "next/image";
 
 interface Props {
   conteudo: {
@@ -20,7 +21,9 @@ export default function ContentCard({ conteudo }: Props) {
   return (
     <div className="overflow-hidden shadow-md bg-white hover:shadow-xl transition">
       <Link href={`/conteudos/${conteudo.id}`}>
-        <img
+        <Image
+          width={600}
+          height={400}
           src={conteudo.banner}
           alt={conteudo.titulo}
           className="w-full h-48 object-cover"

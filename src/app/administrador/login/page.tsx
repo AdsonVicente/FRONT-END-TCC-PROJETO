@@ -43,7 +43,7 @@ export default function Login() {
                 toast.success(`Bem-vindo, ${admin.nome}!`);
                 try {
                     await api.get(`/administradorDetalhes?id=${admin.id}`);
-                } catch (error:unknown) {
+                } catch (error: unknown) {
                     // Detalhes do admin são opcionais
                 }
                 router.push("/administrador/dashboard");
@@ -56,6 +56,8 @@ export default function Login() {
                 const message =
                     (error.response?.data as { message?: string })?.message ||
                     "Erro ao tentar logar. Tente novamente.";
+                console.error('erro ao tentar logar ' + error)
+
                 setError("senha", { message });
                 toast.error(message);
             } else {

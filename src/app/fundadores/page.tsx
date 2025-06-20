@@ -45,7 +45,7 @@ const QuoteSection: React.FC<{ quote: string; author: string }> = ({ quote, auth
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
     >
-        <p className="text-2xl md:text-3xl font-serif italic text-red-500 mb-6 leading-relaxed">"{quote}"</p>
+        <p className="text-2xl md:text-3xl font-serif italic text-red-500 mb-6 leading-relaxed">&ldquo;{quote}&rdquo;</p>
         <p className="text-lg md:text-2xl font-semibold text-yellow-500 tracking-wide">— {author}</p>
     </motion.div>
 );

@@ -148,6 +148,8 @@ export default function PublicarConteudo() {
       router.push("/administrador/gerenciamento/conteudos");
     } catch (error) {
       console.error(error);
+        console.error('erro ao publicar conteudo ' + error)
+
       toast.error("Erro ao publicar conteúdo.");
     } finally {
       setIsLoading(false);
