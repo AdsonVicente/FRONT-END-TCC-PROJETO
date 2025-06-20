@@ -3,7 +3,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import Image from "next/image";
 
@@ -12,10 +11,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 
-const metadata: Metadata = {
-  title: "História - Comunidade Ágape",
-  description: "Conheça a história, missão e sinais da Comunidade Ágape.",
-};
 
 type SinalCardProps = {
   title: string;

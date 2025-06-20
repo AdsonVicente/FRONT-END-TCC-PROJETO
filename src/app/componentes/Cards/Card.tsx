@@ -47,6 +47,8 @@ const Card: React.FC<{ conteudo: Conteudo }> = ({ conteudo }) => {
           <Image
             src={conteudo.banner}
             alt={conteudo.titulo}
+            width={600}
+            height={400}
             className="shadow-lg w-full max-w-full h-[200px] object-cover object-center md:min-h-[180px] md:max-h-[150px] md:min-w-[300px] md:max-w-[300px]"
             style={{
               backgroundSize: "cover",

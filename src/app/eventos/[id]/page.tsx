@@ -113,6 +113,8 @@ const DetalheEvento: React.FC = () => {
 
                 <div className="flex justify-center mb-8">
                     <Image
+                        width={600}
+                        height={400}
                         src={evento.banner}
                         alt={evento.titulo}
                         className="w-full h-auto object-cover rounded-lg shadow-md"

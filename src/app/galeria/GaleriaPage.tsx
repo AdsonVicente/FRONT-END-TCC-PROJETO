@@ -83,6 +83,8 @@ export default function GaleriaPage() {
                                 } bg-white`}
                         >
                             <Image
+                                width={600}
+                                height={400}
                                 src={imagemCapa?.imagemUrl}
                                 alt={`Capa da categoria ${categoria}`}
                                 className="w-full h-40 object-cover"
@@ -110,6 +112,8 @@ export default function GaleriaPage() {
                                     className="rounded-lg overflow-hidden shadow-sm bg-white flex flex-col"
                                 >
                                     <Image
+                                        width={600}
+                                        height={400}
                                         src={imagemUrl}
                                         alt={titulo}
                                         className="w-full h-36 object-cover"

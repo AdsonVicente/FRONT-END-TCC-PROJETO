@@ -46,7 +46,7 @@ interface ConteudoAPI {
 
 const fetchConteudos = async (): Promise<Conteudo[]> => {
   const res = await fetch(
-    "http://localhost:3333/conteudos",
+    "https://back-end-comunidadeagape-production.up.railway.app/conteudos",
     {
       headers: { Origin: "https://www.comagape.org" },
     }

@@ -55,14 +55,10 @@ const GerenciarLiturgia: React.FC = () => {
     setCurrentPage(1);
   }, [liturgias, dataFiltro]); // <- 🔥 dependências necessárias
 
-  // useEffect correto
   useEffect(() => {
     aplicarFiltros();
-  }, [aplicarFiltros]); // 🔥 Sem warnings
+  }, [dataFiltro, aplicarFiltros]);
 
-  useEffect(() => {
-    aplicarFiltros();
-  }, [dataFiltro]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
