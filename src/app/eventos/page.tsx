@@ -189,7 +189,9 @@ export default async function Page() {
     let eventos: Evento[] = [];
     try {
         eventos = await fetchEventos();
-    } catch (_: unknown) { }
+    } catch {
+        
+    }
 
     const { futuros, passados } = separarEventos(eventos);
 

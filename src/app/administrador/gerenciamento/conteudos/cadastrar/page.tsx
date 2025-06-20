@@ -75,6 +75,7 @@ export default function PublicarConteudo() {
         const response = await api.get(`/administrador/${adminId}`);
         setAutor(response.data.nome);
       } catch (error: unknown) {
+        console.error('erro ao publicar conteudo ' + error)
         toast.error("Erro ao buscar dados do administrador.");
       }
     };
@@ -148,7 +149,7 @@ export default function PublicarConteudo() {
       router.push("/administrador/gerenciamento/conteudos");
     } catch (error) {
       console.error(error);
-        console.error('erro ao publicar conteudo ' + error)
+      console.error('erro ao publicar conteudo ' + error)
 
       toast.error("Erro ao publicar conteúdo.");
     } finally {

@@ -44,6 +44,8 @@ export default function Login() {
                 try {
                     await api.get(`/administradorDetalhes?id=${admin.id}`);
                 } catch (error: unknown) {
+                    console.error('erro ao trazer administradores ' + error)
+
                     // Detalhes do admin são opcionais
                 }
                 router.push("/administrador/dashboard");
