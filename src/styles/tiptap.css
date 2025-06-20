@@ -37,11 +37,5 @@
   border: 1px solid #e2e8f0;
   padding: 8px;
 }
-.btn {
-  @apply px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600;
-}
 
-.btn-active {
-  @apply px-2 py-1 rounded bg-blue-700 text-white;
-}
 

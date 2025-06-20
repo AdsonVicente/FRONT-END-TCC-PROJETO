@@ -21,6 +21,7 @@ interface Noticia {
     };
 }
 
+
 function stripHtmlTags(html: string) {
     if (typeof window === "undefined") {
         return html.replace(/<[^>]+>/g, "");
@@ -31,23 +32,32 @@ function stripHtmlTags(html: string) {
     }
 }
 
-interface PageProps {
+type Params = {
     params: { id: string };
-}
+};
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { id } = params;
 
     try {
         const response = await api.get(`/conteudos/${id}`);
         const data = response.data;
 
+        if (!data) {
+            return {
+                title: "Conteúdo não encontrado",
+                description: "Este conteúdo não foi encontrado no site.",
+            };
+        }
+
         const title = data.titulo || "Notícia";
         const description = data.descricao
             ? data.descricao.replace(/<[^>]*>/g, "").slice(0, 150)
             : "Confira essa notícia em nosso site.";
-        const imageUrl = data.banner?.startsWith("http") ? data.banner : "";
 
+        const imageUrl = data.banner?.startsWith("http")
+            ? data.banner
+            : `https://res.cloudinary.com/dd7vxtdc0/image/upload/${data.banner}`;
 
         return {
             title,
@@ -55,7 +65,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
             openGraph: {
                 title,
                 description,
-                url: `https://comagape/conteudos/${id}`,
+                url: `https://comagape.com/conteudos/${id}`,
                 type: "article",
                 images: [
                     {
@@ -73,14 +83,16 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
                 images: [imageUrl],
             },
         };
-    } catch {
+    } catch (error) {
+        console.error("Erro ao gerar metadata:", error);
         return {
             title: "Conteúdo não encontrado",
             description: "Este conteúdo não foi encontrado no site.",
         };
     }
 }
-export default async function DetalheConteudo({ params }: PageProps) {
+export default async function DetalheConteudo({ params }: { params: { id: string } }) {
+
     const { id } = params;
 
     // Faz a requisição no servidor
